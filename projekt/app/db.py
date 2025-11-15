@@ -3,6 +3,8 @@ from typing import List
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy import String, Integer, ForeignKey, Date, Time
 from datetime import date, time
+import click
+from flask import current_app
 
 class Base(DeclarativeBase):
     pass
@@ -70,3 +72,16 @@ class Participation(db.Model):
 
     client: Mapped["Client"] = relationship(back_populates="participations")
     group_class: Mapped["GroupClass"] = relationship(back_populates="participations")
+
+def init_db():
+    with current_app.app_context():
+        db.create_all()
+
+@click.command('init-db')
+def init_db_command():
+    """Clear the existing data and create new tables"""
+    init_db()
+    click.echo('Initialized the database')
+
+def init_app(app):
+    app.cli.add_command(init_db_command)
