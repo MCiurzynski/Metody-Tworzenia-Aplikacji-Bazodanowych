@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Rejestracja{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-5">
+        <div class="card shadow-sm border-primary">
+            <div class="card-header bg-primary text-white text-center">
+                <h3 class="mb-0">Utwórz konto klubowicza</h3>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    
+                    <h5 class="mb-3 text-primary border-bottom pb-2">Dane konta</h5>
+                    
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Login (Nazwa użytkownika)</label>
+                        <input type="text" name="username" id="username" class="form-control" placeholder="np. jan_kowalski" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Adres Email</label>
+                        <input type="email" name="email" id="email" class="form-control" placeholder="jan@example.com" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Hasło</label>
+                        <input type="password" name="password" id="password" class="form-control" required>
+                    </div>
+
+                    <h5 class="mb-3 mt-4 text-primary border-bottom pb-2">Dane osobowe</h5>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="first_name" class="form-label">Imię</label>
+                            <input type="text" name="first_name" id="first_name" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="last_name" class="form-label">Nazwisko</label>
+                            <input type="text" name="last_name" id="last_name" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="pesel" class="form-label">PESEL</label>
+                        <input type="text" name="pesel" id="pesel" class="form-control" maxlength="11" required>
+                        <div class="form-text">Potrzebny do weryfikacji karnetu.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="phone_number" class="form-label">Numer telefonu</label>
+                        <input type="text" name="phone_number" id="phone_number" class="form-control" placeholder="np. 123 456 789" required>
+                    </div>
+
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-success btn-lg">Zarejestruj się</button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center text-muted">
+                <small>Masz już konto? <a href="{{ url_for('auth.login') }}">Zaloguj się</a></small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

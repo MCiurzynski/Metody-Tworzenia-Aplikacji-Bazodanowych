@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}Witamy{% endblock %}
+
+{% block content %}
+
+<div class="p-5 mb-4 bg-light rounded-3 border shadow-sm">
+    <div class="container-fluid py-5">
+        <h1 class="display-4 fw-bold">Zbuduj formę życia z nami! 🏋️</h1>
+        <p class="col-md-8 fs-4 mt-3">Profesjonalny sprzęt, doświadczeni trenerzy i atmosfera, która motywuje. Dołącz do najlepszej społeczności fitness w mieście.</p>
+        <div class="mt-4">
+            <a class="btn btn-primary btn-lg px-4 me-2" href="{{ url_for('auth.register') }}">Dołącz Teraz</a>
+            <a class="btn btn-outline-secondary btn-lg px-4" href="{{ url_for('auth.login') }}">Strefa Klienta</a>
+        </div>
+    </div>
+</div>
+
+<div class="row align-items-md-stretch mb-4">
+    <div class="col-md-4 mb-3">
+        <div class="h-100 p-4 text-white bg-dark rounded-3">
+            <h2>💪 Sprzęt</h2>
+            <p>Dysponujemy najnowszym sprzętem siłowym i cardio. Strefa wolnych ciężarów, maszyny izolowane i strefa funkcjonalna czekają na Ciebie.</p>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="h-100 p-4 bg-light border rounded-3">
+            <h2>🧘‍♀️ Zajęcia</h2>
+            <p>Joga, CrossFit, Zumba czy Pilates? Sprawdź nasz grafik i wybierz coś dla siebie. Zajęcia prowadzone są przez certyfikowanych instruktorów.</p>
+            <a href="#" class="btn btn-outline-dark mt-2">Zobacz Grafik (Demo)</a>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="h-100 p-4 text-white bg-primary rounded-3">
+            <h2>🏆 Trenerzy</h2>
+            <p>Nasi trenerzy personalni pomogą Ci ułożyć plan treningowy i dietetyczny dostosowany do Twoich celów. Nie wiesz jak zacząć? Pomożemy!</p>
+        </div>
+    </div>
+</div>
+
+<div class="pricing-header p-3 pb-md-4 mx-auto text-center">
+    <h2 class="display-6 fw-normal">Nasza Oferta</h2>
+    <p class="fs-5 text-muted">Wybierz karnet dopasowany do Twoich potrzeb.</p>
+</div>
+
+<div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
+    <div class="col">
+        <div class="card mb-4 rounded-3 shadow-sm">
+            <div class="card-header py-3">
+                <h4 class="my-0 fw-normal">Student</h4>
+            </div>
+            <div class="card-body">
+                <h1 class="card-title pricing-card-title">89 zł<small class="text-muted fw-light">/mc</small></h1>
+                <ul class="list-unstyled mt-3 mb-4">
+                    <li>Wejście do 16:00</li>
+                    <li>Dostęp do strefy cardio</li>
+                    <li>Zniżki na barze</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col">
+        <div class="card mb-4 rounded-3 shadow-sm border-primary">
+            <div class="card-header py-3 text-white bg-primary border-primary">
+                <h4 class="my-0 fw-normal">Open</h4>
+            </div>
+            <div class="card-body">
+                <h1 class="card-title pricing-card-title">129 zł<small class="text-muted fw-light">/mc</small></h1>
+                <ul class="list-unstyled mt-3 mb-4">
+                    <li><strong>Wejście bez limitu</strong></li>
+                    <li>Wszystkie zajęcia grupowe</li>
+                    <li>Jeden trening personalny</li>
+                    <li>Sauna w cenie</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col">
+        <div class="card mb-4 rounded-3 shadow-sm">
+            <div class="card-header py-3">
+                <h4 class="my-0 fw-normal">VIP</h4>
+            </div>
+            <div class="card-body">
+                <h1 class="card-title pricing-card-title">199 zł<small class="text-muted fw-light">/mc</small></h1>
+                <ul class="list-unstyled mt-3 mb-4">
+                    <li>Wszystko co w Open</li>
+                    <li>Plan dietetyczny</li>
+                    <li>Ręcznik i woda gratis</li>
+                    <li>Parking podziemny</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

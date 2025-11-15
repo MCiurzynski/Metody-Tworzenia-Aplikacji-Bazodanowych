@@ -1,15 +1,36 @@
 from flask_sqlalchemy import SQLAlchemy
-from typing import List
+from typing import List, Optional
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy import String, Integer, ForeignKey, Date, Time
 from datetime import date, time
 import click
 from flask import current_app
+from flask_login import UserMixin
+from passlib.hash import argon2
 
 class Base(DeclarativeBase):
     pass
 
 db = SQLAlchemy(model_class=Base)
+
+class User(UserMixin, db.Model):
+    __tablename__ = "user"
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    username: Mapped[str] = mapped_column(String(64), unique=True, nullable=False)
+    email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
+    password_hash: Mapped[str] = mapped_column(String(256))
+    
+    role: Mapped[str] = mapped_column(String(20), nullable=False, default='client')
+
+    client_profile: Mapped[Optional["Client"]] = relationship(back_populates="user", uselist=False)
+    trainer_profile: Mapped[Optional["Trainer"]] = relationship(back_populates="user", uselist=False)
+
+    def set_password(self, password):
+        self.password_hash = argon2.hash(password)
+
+    def check_password(self, password):
+        return argon2.verify(password, self.password_hash)
 
 class Client(db.Model):
     __tablename__ = "client"
@@ -19,10 +40,11 @@ class Client(db.Model):
     last_name: Mapped[str] = mapped_column(String(256), nullable=False)
     pesel: Mapped[str] = mapped_column(String(11), unique=True, nullable=False)
     phone_number: Mapped[str] = mapped_column(String(15), nullable=False)
-    email_address: Mapped[str] = mapped_column(String(256), nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=True, unique=True)
 
     memberships: Mapped[List["Membership"]] = relationship(back_populates="client")
     participations: Mapped[List["Participation"]] = relationship(back_populates="client")
+    user: Mapped["User"] = relationship(back_populates="client_profile")
 
 class Membership(db.Model):
     __tablename__ = "membership"
@@ -36,6 +58,9 @@ class Membership(db.Model):
 
     client: Mapped["Client"] = relationship(back_populates="memberships")
 
+    def is_active(self):
+        return self.start_date >= date.today() and self.end_date <= date.today()
+
 class Trainer(db.Model):
     __tablename__ = "trainer"
 
@@ -44,9 +69,10 @@ class Trainer(db.Model):
     last_name: Mapped[str] = mapped_column(String(256), nullable=False)
     pesel: Mapped[str] = mapped_column(String(11), unique=True, nullable=False)
     phone_number: Mapped[str] = mapped_column(String(15), nullable=False)
-    email_address: Mapped[str] = mapped_column(String(256), nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=True, unique=True)
 
     group_classes: Mapped[List["GroupClass"]] = relationship(back_populates="trainer")
+    user: Mapped["User"] = relationship(back_populates="trainer_profile")
 
 class GroupClass(db.Model):
     __tablename__ = "group_class"
@@ -84,4 +110,40 @@ def init_db_command():
     click.echo('Initialized the database')
 
 def init_app(app):
+    db.init_app(app)
     app.cli.add_command(init_db_command)
+    app.cli.add_command(add_admin_command)
+
+def add_admin(username, email, password):
+    existing_user = db.session.execute(
+        db.select(User).where((User.username == username) | (User.email == email))
+    ).scalar()
+    
+    if existing_user:
+        click.echo(click.style(f"Błąd: Użytkownik {username} lub email {email} już istnieje!", fg='red'))
+        return
+
+    new_admin = User(
+        username=username,
+        email=email,
+        role='admin'
+    )
+    
+    new_admin.set_password(password)
+
+    try:
+        db.session.add(new_admin)
+        db.session.commit()
+        click.echo(click.style(f"Sukces! Administrator {username} został utworzony.", fg='green'))
+    except Exception as e:
+        db.session.rollback()
+        click.echo(click.style(f"Wystąpił błąd bazy danych: {e}", fg='red'))
+
+@click.command('add-admin')
+@click.argument('username')
+@click.argument('email')
+@click.password_option()
+def add_admin_command(username, email, password):
+    """Clear the existing data and create new tables"""
+    add_admin(username, email, password)
+    click.echo('Added admin')

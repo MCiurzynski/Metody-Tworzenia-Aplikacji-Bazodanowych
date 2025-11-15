@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Panel Trenera{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="p-5 mb-4 bg-light rounded-3">
+        <div class="container-fluid py-3">
+            <h1 class="display-5 fw-bold">Cześć, Trenerze! 🏋️‍♂️</h1>
+            <p class="fs-4">Gotowy na trening? Sprawdź, co masz dzisiaj w planie.</p>
+            
+            <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                <a href="{{ url_for('gym.schedule') }}" class="btn btn-primary btn-lg px-4 me-md-2">Mój Grafik</a>
+                <button type="button" class="btn btn-outline-secondary btn-lg px-4" disabled>Edytuj Profil (Wkrótce)</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Szybkie akcje</h5>
+                    <ul>
+                        <li>Aby sprawdzić listę obecności, wejdź w <strong>Grafik</strong> i wybierz swoje zajęcia.</li>
+                        <li>Jeśli nie możesz poprowadzić zajęć, skontaktuj się z Recepcją.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
