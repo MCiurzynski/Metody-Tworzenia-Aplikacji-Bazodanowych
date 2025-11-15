@@ -1,0 +1,17 @@
+name: aplikacje_bd
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - sqlalchemy
+  - pycryptodome
+  - pip
+  - python=3.13
+  - requests
+  - pytest
+  - html-sanitizer
+  - markdown
+  - pip:
+    - flask
+    - flask_login
+    - Flask-SQLAlchemy
