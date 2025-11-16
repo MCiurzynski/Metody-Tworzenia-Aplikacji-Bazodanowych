@@ -4,7 +4,6 @@ from flask_login import login_required, current_user
 
 main_bp = Blueprint('main', __name__, url_prefix='/')
 
-@login_required
 @main_bp.route('')
 def index():
     if not current_user.is_authenticated:

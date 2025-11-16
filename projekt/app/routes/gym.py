@@ -7,7 +7,7 @@ from flask import (
 from app.db import db, Client, Membership, MembershipType, Employee, Trainer, GroupClass
 from flask_login import login_user, logout_user, login_required, current_user
 from app.routes.auth import employee_required, owner_required
-from app.forms import MembershipTypeForm, RegistrationForm, PersonForm, GroupClassForm
+from app.forms import MembershipTypeForm, RegistrationForm, PersonForm, GroupClassForm, PersonDataForm
 from flask import abort
 from app.services import create_user_with_profile
 
@@ -108,23 +108,24 @@ def delete_employee(id: int):
 @owner_required
 def edit_employee(id: int):
     employee = db.session.execute(db.select(Employee).where(Employee.id == id)).scalar()
-    form = PersonForm(obj=employee)
+
+    form = PersonDataForm(obj=employee) 
+    
     if form.validate_on_submit():
-        form.populate_obj(employee)
+        form.populate_obj(employee) 
         db.session.commit()
         flash('Zaktualizowano dane pracownika.', 'success')
         return redirect(url_for('gym.view_employees'))
+        
     return render_template('gym/edit_employee.html', employee=employee, form=form)
 
 
 @gym_bp.route('/trainer')
-@employee_required
 def view_trainers():
     trainers = db.session.execute(db.select(Trainer)).scalars().all()
     return render_template('gym/view_trainers.html', trainers=trainers)
 
 @gym_bp.route('/trainer/<int:id>')
-@employee_required
 def view_trainer(id):
     trainer = db.get_or_404(Trainer, id)
     return render_template('gym/view_trainer.html', trainer=trainer)
@@ -231,3 +232,61 @@ def edit_class(id: int):
         flash('Zaktualizowano dane zajęć grupowych', 'success')
         return redirect(url_for('gym.view_classes'))
     return render_template('gym/edit_class.html', form=form, group_class=group_class)
+
+from app.db import Participation # Pamiętaj o imporcie modelu Participation!
+
+@gym_bp.route('/classes/<int:id>/join', methods=['POST'])
+@login_required 
+def join_class(id):
+    if current_user.role != 'client':
+        flash('Tylko klienci mogą zapisywać się na zajęcia.', 'warning')
+        return redirect(url_for('gym.view_classes'))
+
+    client = current_user.person_profile #
+
+    has_active_membership = any(m.is_active for m in client.memberships)
+    
+    if not has_active_membership:
+        flash('Nie możesz się zapisać. Nie masz aktywnego karnetu!', 'danger')
+        return redirect(url_for('gym.view_classes'))
+
+    already_joined = any(p.group_class_id == id for p in client.participations)
+    
+    if already_joined:
+        flash('Jesteś już zapisany na te zajęcia.', 'info')
+        return redirect(url_for('gym.view_classes'))
+
+    participation = Participation(
+        client_id=client.id,
+        group_class_id=id
+    )
+    db.session.add(participation)
+    db.session.commit()
+    
+    flash('Pomyślnie zapisano na zajęcia!', 'success')
+    return redirect(url_for('gym.view_classes'))
+
+
+@gym_bp.route('/classes/<int:id>/leave', methods=['POST'])
+@login_required
+def leave_class(id):
+    if current_user.role != 'client':
+        return redirect(url_for('gym.view_classes'))
+
+    client = current_user.person_profile
+
+    participation = db.session.execute(
+        db.select(Participation).where(
+            Participation.client_id == client.id,
+            Participation.group_class_id == id
+        )
+    ).scalar()
+
+    if participation:
+        db.session.delete(participation)
+        db.session.commit()
+        flash('Wypisano z zajęć.', 'info')
+    else:
+        flash('Nie byłeś zapisany na te zajęcia.', 'warning')
+
+    return redirect(url_for('gym.view_classes'))

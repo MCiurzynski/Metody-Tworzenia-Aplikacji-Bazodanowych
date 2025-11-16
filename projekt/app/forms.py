@@ -4,27 +4,15 @@ from wtforms.validators import DataRequired, Length, Regexp, Email, EqualTo, Val
 from app.db import db, User
 from datetime import date
 
-class PersonForm(FlaskForm):
+class PersonDataForm(FlaskForm):
     first_name = StringField('Imię', validators=[DataRequired(), Length(min=2, max=100)])
     last_name = StringField('Nazwisko', validators=[DataRequired(), Length(min=2, max=100)])
+    pesel = StringField('PESEL', validators=[DataRequired(), Length(min=11, max=11)])
+    phone_number = StringField('Telefon', validators=[DataRequired(), Length(min=9, max=15)])
 
-    pesel = StringField('PESEL', validators=[
-        DataRequired(), 
-        Length(min=11, max=11), 
-        Regexp(r'^\d{11}$', message="PESEL musi składać się z cyfr")
-    ])
-    
-    phone_number = StringField('Telefon', validators=[
-        DataRequired(),
-        Length(min=9, max=15)
-    ])
-
-class RegistrationForm(PersonForm):
+class PersonForm(PersonDataForm): 
     username = StringField('Login', validators=[DataRequired(), Length(min=4, max=25)])
-    email = EmailField('Email', validators=[DataRequired(), Email(message='Nieprawidłowy adres email')])
-    password = PasswordField('Hasło', validators=[DataRequired(), Length(min=6)])
-    confirm_password = PasswordField('Powtórz hasło', validators=[DataRequired(), EqualTo('password', message='Musi być takie samo jak hasło')])
-
+    email = EmailField('Email', validators=[DataRequired(), Email()])
     def validate_username(self, username):
         user = db.session.execute(db.select(User).where(User.username == username.data)).scalar()
         if user:
@@ -34,6 +22,10 @@ class RegistrationForm(PersonForm):
         user = db.session.execute(db.select(User).where(User.email == email.data)).scalar()
         if user:
             raise ValidationError('Ten email jest już zajęty.')
+
+class RegistrationForm(PersonForm):
+    password = PasswordField('Hasło', validators=[DataRequired()])
+    confirm_password = PasswordField('Powtórz hasło', validators=[DataRequired(), EqualTo('password')])
 
 class LoginForm(FlaskForm):
     username = StringField('Login', validators=[DataRequired()])
@@ -57,7 +49,7 @@ class MembershipTypeForm(FlaskForm):
     ])
 
 class AssignMembershipForm(FlaskForm):
-    membership_type_id = SelectField('Wybierz karnet', coerce=int, validators=[DataRequired()])
+    membership_type_id = SelectField('Wybierz karnet', coerce=int, validators=[InputRequired()])
     
     start_date = DateField('Data rozpoczęcia', default=date.today, validators=[DataRequired()])
 

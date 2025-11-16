@@ -60,7 +60,25 @@
                                     {% endif %}
 
                                     {% if current_user.role == 'client' %}
-                                        <button class="btn btn-sm btn-success">Zapisz się</button>
+                                        
+                                        {% set status = namespace(is_signed_up=false) %}
+                                        
+                                        {% for p in class.participations %}
+                                            {% if p.client_id == current_user.person_profile.id %}
+                                                {% set status.is_signed_up = true %}
+                                            {% endif %}
+                                        {% endfor %}
+
+                                        {% if status.is_signed_up %}
+                                            <form action="{{ url_for('gym.leave_class', id=class.id) }}" method="post" class="d-inline">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">Wypisz się</button>
+                                            </form>
+                                        {% else %}
+                                            <form action="{{ url_for('gym.join_class', id=class.id) }}" method="post" class="d-inline">
+                                                <button type="submit" class="btn btn-sm btn-success">Zapisz się</button>
+                                            </form>
+                                        {% endif %}
+
                                     {% endif %}
                                 </div>
                             </td>

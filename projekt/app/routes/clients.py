@@ -4,7 +4,7 @@ import re
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for, Response
 )
-from app.db import db, Client, Membership
+from app.db import db, Client, Membership, MembershipType
 from flask_login import login_user, logout_user, login_required, current_user
 from app.routes.auth import employee_required
 from app.forms import AssignMembershipForm, RegistrationForm, PersonForm
@@ -44,7 +44,10 @@ def edit_client(id: int):
     client = db.get_or_404(Client, id)
     form = PersonForm(obj=client)
     if form.validate_on_submit():
-        pass            ## TODO
+        form.populate_obj(client)
+        db.session.commit()
+        flash('Zaktualizowano dane klienta', 'success')
+        return redirect(url_for('clients.index'))
     return render_template('clients/edit_client.html', form=form, client=client)
 
 @clients_bp.route('/<int:id>/delete', methods=['POST'])
@@ -62,9 +65,23 @@ def view_membership(id: int): #select membership
     client = db.get_or_404(Client, id)
     return render_template('clients/membership_info.html', client=client)
 
-@clients_bp.route('/<int:id>/membership/add', methods=['GET', 'POST'])
+@clients_bp.route('/<int:client_id>/membership/add', methods=['GET', 'POST'])
 @employee_required
-def add_membership(id: int):
-    if request.method == 'POST':
-        pass            ## TODO
-    return render_template('clients/add_membership.html')
+def add_membership(client_id: int):
+    client=db.get_or_404(Client, client_id)
+    form = AssignMembershipForm()
+    active_mem_types = db.session.execute(db.select(MembershipType).where(MembershipType.active == True)).scalars().all()
+
+    form.membership_type_id.choices = [
+        (m.id, m.name) for m in active_mem_types
+    ]
+    if form.validate_on_submit():
+        membership = Membership(
+            start_date=form.start_date.data,
+            client_id=client_id,
+            type_id=form.membership_type_id.data
+        )
+        db.session.add(membership)
+        db.session.commit()
+        return redirect(url_for('clients.view_membership', id=client_id))
+    return render_template('clients/add_membership.html', form=form, client=client)

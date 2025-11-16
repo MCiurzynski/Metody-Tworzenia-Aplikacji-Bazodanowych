@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}Lista Klientów{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Baza Klientów</h2>
+        <a href="{{ url_for('clients.add') }}" class="btn btn-primary">
+            ➕ Dodaj Klienta
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Imię i Nazwisko</th>
+                            <th>Email</th>
+                            <th>Telefon</th>
+                            <th>Aktywny Karnet?</th>
+                            <th class="text-end">Akcje</th>
+                        </tr>
+                    </thead>
+                                            <tbody>
+                            {% for client in clients %}
+                                {% if client.active %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ client.first_name }} {{ client.last_name }}</strong>
+                                        <div class="small text-muted">PESEL: {{ client.pesel }}</div>
+                                    </td>
+                                    <td>{{ client.user.email }}</td>
+                                    <td>{{ client.phone_number }}</td>
+                                    <td>
+                                        {% set status = namespace(has_active=false) %}
+                                        
+                                        {% for m in client.memberships %}
+                                            {% if m.is_active %}
+                                                {% set status.has_active = true %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        
+                                        {% if status.has_active %}
+                                            <span class="badge bg-success">TAK</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">NIE</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="btn-group" role="group">
+                                            <a href="{{ url_for('clients.view_client', id=client.id) }}" class="btn btn-sm btn-outline-info">Info</a>
+                                            <a href="{{ url_for('clients.view_membership', id=client.id) }}" class="btn btn-sm btn-outline-success">Karnety</a>
+                                            <a href="{{ url_for('clients.edit_client', id=client.id) }}" class="btn btn-sm btn-outline-warning">Edytuj</a>
+                                            
+                                            <form action="{{ url_for('clients.delete_client', id=client.id) }}" method="post" class="d-inline" onsubmit="return confirm('Usunąć klienta?');">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">Usuń</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            {% else %}
+                                <tr><td colspan="5" class="text-center py-4">Brak klientów.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

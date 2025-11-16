@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Profil Klienta{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow border-0">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        {{ client.first_name }} {{ client.last_name }}
+                    </h4>
+                    {% if not client.active %}
+                        <span class="badge bg-warning text-dark">Zarchiwizowany</span>
+                    {% else %}
+                        <span class="badge bg-success">Aktywny</span>
+                    {% endif %}
+                </div>
+                
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5 class="text-muted mb-3">Dane Kontaktowe</h5>
+                            <p class="mb-1"><strong>Email:</strong> {{ client.user.email }}</p>
+                            <p class="mb-1"><strong>Telefon:</strong> {{ client.phone_number }}</p>
+                            <p class="mb-1"><strong>Login:</strong> {{ client.user.username }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="text-muted mb-3">Dane Osobowe</h5>
+                            <p class="mb-1"><strong>PESEL:</strong> {{ client.pesel }}</p>
+                            <p class="mb-1"><strong>ID w systemie:</strong> #{{ client.id }}</p>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-between align-items-center mt-4">
+                        <a href="{{ url_for('clients.index') }}" class="btn btn-outline-secondary">
+                            ← Lista Klientów
+                        </a>
+
+                        {% if client.active %}
+                        <div class="btn-group" role="group">
+                            <a href="{{ url_for('clients.view_membership', id=client.id) }}" class="btn btn-success">
+                                💳 Karnety
+                            </a>
+                            <a href="{{ url_for('clients.edit_client', id=client.id) }}" class="btn btn-warning">
+                                ✏️ Edytuj Dane
+                            </a>
+                            
+                            <form action="{{ url_for('clients.delete_client', id=client.id) }}" method="post" class="d-inline" onsubmit="return confirm('Czy na pewno chcesz usunąć tego klienta?');">
+                                <button type="submit" class="btn btn-danger" style="border-top-left-radius: 0; border-bottom-left-radius: 0;">
+                                    🗑️ Usuń
+                                </button>
+                            </form>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
