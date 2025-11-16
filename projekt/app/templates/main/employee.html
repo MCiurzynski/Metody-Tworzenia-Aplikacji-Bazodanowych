@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}Recepcja{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="p-5 mb-4 bg-light rounded-3 border shadow-sm">
+        <div class="container-fluid py-2">
+            <h1 class="display-6 fw-bold">Panel Recepcji 🛎️</h1>
+            <p class="fs-5">Szybki dostęp do najważniejszych funkcji obsługi klienta.</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h3 class="card-title text-primary">Klienci</h3>
+                    <p class="card-text">Baza klubowiczów, historia karnetów, edycja danych.</p>
+                    <a href="{{ url_for('clients.index') }}" class="btn btn-primary btn-lg w-100">
+                        🔍 Przeszukaj Bazę Klientów
+                    </a>
+                    <div class="mt-3 text-center">
+                         <a href="{{ url_for('clients.add') }}" class="text-decoration-none">➕ Rejestracja nowego klienta</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h3 class="card-title text-info">Grafik Zajęć</h3>
+                    <p class="card-text">Planowanie zajęć grupowych i przypisywanie sal.</p>
+                    <a href="{{ url_for('gym.view_classes') }}" class="btn btn-info text-white btn-lg w-100">
+                        📅 Zarządzaj Grafikiem
+                    </a>
+                    <div class="mt-3 text-center">
+                        <a href="{{ url_for('gym.add_class') }}" class="text-decoration-none">➕ Dodaj nowe zajęcia</a>
+                   </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="alert alert-secondary text-center">
+                <i class="bi bi-info-circle"></i> Pamiętaj o weryfikacji ważności karnetu przy wejściu klienta!
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

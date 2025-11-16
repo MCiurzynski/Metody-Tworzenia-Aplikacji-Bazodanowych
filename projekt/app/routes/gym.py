@@ -1,0 +1,131 @@
+import functools
+import re
+
+from flask import (
+    Blueprint, flash, g, redirect, render_template, request, session, url_for, Response
+)
+from app.db import db, Client, Membership, MembershipType
+from flask_login import login_user, logout_user, login_required, current_user
+from app.routes.auth import employee_required, owner_required
+from app.forms import MembershipTypeForm
+
+gym_bp = Blueprint('gym', __name__, url_prefix='/')
+
+@gym_bp.route('/membership/type', methods=['GET'])
+@employee_required
+def view_membership_types():
+    pass
+
+@gym_bp.route('/membership/type/add', methods=['GET', 'POST'])
+@owner_required
+def add_membership_type():
+    form = MembershipTypeForm()
+    if form.validate_on_submit():
+        new_type = MembershipType(
+            name=form.name.data,
+            price=form.price.data,
+            duration=form.duration.data
+        )
+        db.session.add(new_type)
+        db.session.commit()
+        flash('Dodano nowy typ karnetu.', 'success')
+        return redirect(url_for('gym.view_membership_types'))
+        
+    return render_template('gym/add_membership_type.html', form=form)
+
+@gym_bp.route('/membership/type/<int:id>/delete', methods=['POST'])
+@owner_required
+def delete_membership_type(id: int):
+    pass
+
+@gym_bp.route('/membership/type/<int:id>/edit', methods=['GET', 'POST'])
+@owner_required
+def edit_membership_type(id: int):
+    mem_type = db.session.get_or_404(MembershipType, id)
+    
+    form = MembershipTypeForm(obj=mem_type)
+    
+    if form.validate_on_submit():
+        form.populate_obj(mem_type)
+        db.session.commit()
+        flash('Zaktualizowano typ karnetu.', 'success')
+        return redirect(url_for('gym.view_membership_types'))
+        
+    return render_template('gym/edit_membership_type.html', form=form, type=mem_type)
+
+
+@gym_bp.route('/employee')
+@owner_required
+def view_employees():
+    pass
+
+@gym_bp.route('/employee/<int:id>')
+@owner_required
+def view_employee():
+    pass
+
+@gym_bp.route('/employee/add', methods=['GET', 'POST'])
+@owner_required
+def add_employee():
+    pass
+
+@gym_bp.route('/employee/<int:id>/delete', methods=['GET', 'POST'])
+@owner_required
+def delete_employee(id: int):
+    pass
+
+@gym_bp.route('/employee/<int:id>/edit', methods=['GET', 'POST'])
+@owner_required
+def edit_employee(id: int):
+    pass
+
+
+@gym_bp.route('/trainer')
+@employee_required
+def view_trainers():
+    pass
+
+@gym_bp.route('/trainer/<int:id>')
+@employee_required
+def view_trainer():
+    pass
+
+@gym_bp.route('/trainer/add', methods=['GET', 'POST'])
+@owner_required
+def add_trainer():
+    pass
+
+@gym_bp.route('/trainer/<int:id>/delete', methods=['GET', 'POST'])
+@owner_required
+def delete_trainer(id: int):
+    pass
+
+@gym_bp.route('/trainer/<int:id>/edit', methods=['GET', 'POST'])
+@owner_required
+def edit_trainer(id: int):
+    pass
+
+@gym_bp.route('/classes')
+@employee_required
+def view_classes():
+    pass
+
+@gym_bp.route('/classes/<int:id>')
+@employee_required
+def view_class(id: int):
+    pass
+
+@gym_bp.route('/classes/add')
+@employee_required
+def add_class():
+    pass
+
+@gym_bp.route('/classes/<int:id>/delete')
+@employee_required
+def delete_class(id: int):
+    pass
+
+@gym_bp.route('/classes/<int:id>/edit')
+@employee_required
+def edit_class(id: int):
+    pass

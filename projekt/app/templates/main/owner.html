@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Panel Właściciela{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-5 text-primary">Witaj, Szefie! 👔</h1>
+            <p class="lead text-muted">Centrum zarządzania Twoją siłownią.</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-primary shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">👥 Personel</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Zarządzaj kontami pracowników recepcji.</p>
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('gym.view_employees') }}" class="btn btn-outline-primary">Lista Pracowników</a>
+                        <a href="{{ url_for('gym.add_employee') }}" class="btn btn-primary">Dodaj Pracownika</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-success shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">💳 Oferta Handlowa</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Definiuj rodzaje karnetów (ceny, długość trwania).</p>
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('gym.view_membership_types') }}" class="btn btn-outline-success">Przeglądaj Ofertę</a>
+                        <a href="{{ url_for('gym.add_membership_type') }}" class="btn btn-success">Nowy Typ Karnetu</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-warning shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">💪 Trenerzy</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Zarządzaj kadrą trenerską i ich profilami.</p>
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('gym.view_trainers') }}" class="btn btn-outline-warning text-dark">Lista Trenerów</a>
+                        <a href="{{ url_for('gym.add_trainer') }}" class="btn btn-warning">Zatrudnij Trenera</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

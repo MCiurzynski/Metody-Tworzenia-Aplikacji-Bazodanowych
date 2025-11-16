@@ -1,7 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, EmailField, BooleanField
-from wtforms.validators import DataRequired, Length, Regexp, Email, EqualTo, ValidationError
+from wtforms import StringField, PasswordField, EmailField, BooleanField, IntegerField, FloatField, DateField, SelectField
+from wtforms.validators import DataRequired, Length, Regexp, Email, EqualTo, ValidationError, NumberRange
 from app.db import db, User
+from datetime import date
 
 class PersonForm(FlaskForm):
     first_name = StringField('Imię', validators=[DataRequired(), Length(min=2, max=100)])
@@ -39,5 +40,23 @@ class LoginForm(FlaskForm):
     password = PasswordField('Hasło', validators=[DataRequired()])
     remember_me = BooleanField('Zapamiętaj mnie')
 
-class MembershipForm(FlaskForm):
-    pass
+class MembershipTypeForm(FlaskForm):
+    name = StringField('Nazwa karnetu', validators=[
+        DataRequired(), 
+        Length(min=2, max=50, message="Nazwa musi mieć od 2 do 50 znaków")
+    ])
+    
+    price = FloatField('Cena (PLN)', validators=[
+        DataRequired(), 
+        NumberRange(min=0, message="Cena nie może być ujemna")
+    ])
+    
+    duration = IntegerField('Długość ważności (w dniach)', validators=[
+        DataRequired(), 
+        NumberRange(min=1, message="Karnet musi być ważny minimum 1 dzień")
+    ])
+
+class AssignMembershipForm(FlaskForm):
+    membership_type_id = SelectField('Wybierz karnet', coerce=int, validators=[DataRequired()])
+    
+    start_date = DateField('Data rozpoczęcia', default=date.today, validators=[DataRequired()])

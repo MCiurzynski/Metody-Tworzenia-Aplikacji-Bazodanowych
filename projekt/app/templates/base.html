@@ -20,7 +20,7 @@
       <ul class="navbar-nav ms-auto">
         {% if current_user.is_authenticated %}
           <li class="nav-item">
-            <span class="nav-link text-light">Witaj, {{ current_user.username }}</span>
+            <span class="nav-link text-light">Witaj, {{ current_user.person_profile.first_name }}</span>
           </li>
           <li class="nav-item">
             <a class="nav-link btn btn-outline-light btn-sm ms-2" href="{{ url_for('auth.logout') }}">Wyloguj</a>

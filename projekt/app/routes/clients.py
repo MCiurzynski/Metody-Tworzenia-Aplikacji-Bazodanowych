@@ -7,6 +7,7 @@ from flask import (
 from app.db import db, Client, Membership
 from flask_login import login_user, logout_user, login_required, current_user
 from app.routes.auth import employee_required
+from app.forms import AssignMembershipForm
 
 clients_bp = Blueprint('clients', __name__, url_prefix='/client')
 

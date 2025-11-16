@@ -1,4 +1,4 @@
-from app.db import db, User, Client, Trainer
+from app.db import db, User, Client, Trainer, Employee
 
 def create_user_with_profile(form_data, role):
     try:
@@ -19,6 +19,14 @@ def create_user_with_profile(form_data, role):
             )
         elif role == 'trainer':
             profile = Trainer(
+                first_name=form_data.first_name.data,
+                last_name=form_data.last_name.data,
+                pesel=form_data.pesel.data,
+                phone_number=form_data.phone_number.data,
+                user=new_user
+            )
+        elif role == 'employee':
+            profile = Employee(
                 first_name=form_data.first_name.data,
                 last_name=form_data.last_name.data,
                 pesel=form_data.pesel.data,

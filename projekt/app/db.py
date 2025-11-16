@@ -1,7 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from typing import List, Optional
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from sqlalchemy import String, Integer, ForeignKey, Date, Time
+from sqlalchemy import String, Integer, ForeignKey, Date, Time, Boolean
 from datetime import date, time, timedelta
 import click
 from flask import current_app
@@ -91,6 +91,7 @@ class MembershipType(db.Model):
     name: Mapped[str] = mapped_column(String(50), nullable=False)
     price: Mapped[float] = mapped_column(nullable=False)
     duration: Mapped[int] = mapped_column(nullable=False) # długość w dniach
+    active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     
     memberships: Mapped[List['Membership']] = relationship(back_populates="type")
 
@@ -104,6 +105,7 @@ class Membership(db.Model):
     client: Mapped["Client"] = relationship(back_populates="memberships")
     type_id: Mapped[int] = mapped_column(ForeignKey("membership_type.id"))
     type: Mapped['MembershipType'] = relationship(back_populates="memberships")
+    active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
 
     @property
     def end_date(self):
@@ -114,7 +116,7 @@ class Membership(db.Model):
     @property
     def is_active(self):
         today = date.today()
-        return self.start_date <= today and self.end_date >= today
+        return self.start_date <= today and self.end_date >= today and self.active
 
 class GroupClass(db.Model):
     __tablename__ = "group_class"
@@ -184,7 +186,7 @@ def add_owner(username, email, password, first_name, last_name, pesel, phone):
         db.session.rollback()
         click.echo(click.style(f"Wystąpił błąd bazy danych: {e}", fg='red'))
 
-@click.command('add-admin')
+@click.command('add-owner')
 @click.argument('username')
 @click.argument('email')
 @click.argument('first_name')

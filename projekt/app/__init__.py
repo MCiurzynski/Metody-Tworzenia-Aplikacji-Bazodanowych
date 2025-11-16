@@ -32,6 +32,10 @@ def create_app(test_config: dict=None, config_class=Config):
     from app.routes.auth import auth_bp
 
     app.register_blueprint(auth_bp)
+    
+    from app.routes.gym import gym_bp
+
+    app.register_blueprint(gym_bp)
 
     return app
 

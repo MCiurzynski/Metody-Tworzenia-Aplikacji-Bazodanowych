@@ -4,36 +4,43 @@
 
 {% block content %}
 <div class="container">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h1>Witaj, {{ current_user.username }}! 👋</h1>
-            <p class="text-muted">Twoje centrum zarządzania formą.</p>
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <h1 class="fw-bold text-primary">Witaj w strefie klubowicza! 👋</h1>
+            <p class="lead">Zarządzaj swoją formą w jednym miejscu.</p>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            <div class="card h-100 border-info">
-                <div class="card-header bg-info text-white">🎫 Twój Karnet</div>
-                <div class="card-body text-center">
-                    <h5 class="card-title">Status Członkostwa</h5>
-                    <p class="card-text">Przejdź do szczegółów, aby sprawdzić ważność karnetu.</p>
-                    
-                    <a href="{{ url_for('clients.client_details', id=current_user.client_profile.id) }}" class="btn btn-outline-info">
-                        Sprawdź Karnet
-                    </a>
+    <div class="row g-4 justify-content-center">
+        <div class="col-md-5">
+            <div class="card h-100 shadow-sm border-primary">
+                <div class="card-header bg-primary text-white text-center py-3">
+                    <h4 class="mb-0">🎫 Twój Karnet</h4>
+                </div>
+                <div class="card-body text-center d-flex flex-column justify-content-center">
+                    {% if current_user.person_profile.memberships %}
+                        {% set active_membership = current_user.person_profile.memberships[-1] %}
+                        <h5 class="card-title display-6">{{ active_membership.type.name }}</h5>
+                        <p class="card-text fs-5">
+                            Ważny do: <strong>{{ active_membership.end_date }}</strong>
+                        </p>
+                        <span class="badge bg-success fs-6 mx-auto">Aktywny</span>
+                    {% else %}
+                        <p class="card-text text-muted mb-4">Nie masz aktywnego karnetu.</p>
+                        <a href="#" class="btn btn-outline-primary disabled">Skontaktuj się z recepcją</a>
+                    {% endif %}
                 </div>
             </div>
         </div>
 
-        <div class="col-md-6 mb-3">
-            <div class="card h-100 border-danger">
-                <div class="card-header bg-danger text-white">🔥 Zajęcia Grupowe</div>
-                <div class="card-body text-center">
-                    <h5 class="card-title">Chcesz poćwiczyć?</h5>
-                    <p class="card-text">Zapisz się na jogę, crossfit lub inne zajęcia.</p>
-                    
-                    <a href="{{ url_for('gym.schedule') }}" class="btn btn-danger">
+        <div class="col-md-5">
+            <div class="card h-100 shadow-sm border-danger">
+                <div class="card-header bg-danger text-white text-center py-3">
+                    <h4 class="mb-0">🔥 Grafik Zajęć</h4>
+                </div>
+                <div class="card-body text-center d-flex flex-column justify-content-center">
+                    <p class="card-text fs-5">Zapisz się na Crossfit, Jogę lub Zumbę.</p>
+                    <a href="{{ url_for('gym.view_classes') }}" class="btn btn-danger btn-lg w-100 mt-auto">
                         Zobacz Grafik i Zapisz się
                     </a>
                 </div>

@@ -62,7 +62,15 @@ def logout():
 def employee_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
-        if not current_user.is_authenticated or current_user.role != 'employee':
+        if not current_user.is_authenticated or (current_user.role != 'employee' and current_user.role != 'owner'):
+            return redirect(url_for('main.index'))
+        return view(**kwargs)
+    return wrapped_view
+
+def owner_required(view):
+    @functools.wraps(view)
+    def wrapped_view(**kwargs):
+        if not current_user.is_authenticated or current_user.role != 'owner':
             return redirect(url_for('main.index'))
         return view(**kwargs)
     return wrapped_view
