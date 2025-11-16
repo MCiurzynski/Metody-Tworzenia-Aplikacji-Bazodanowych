@@ -26,7 +26,7 @@ def add(): #add client
 
 @clients_bp.route('/<int:id>')
 @admin_required
-def client(id: int): #select client
+def view_client(id: int): #select client
     client = db.session.get_or_404(Client, id)
     return render_template('clients/client_info.html', client=client)
 
@@ -39,9 +39,9 @@ def edit_client(id: int):
 
 @clients_bp.route('/<int:id>/membership')
 @admin_required
-def membership(id: int): #select membership
-    membership = db.session.get_or_404(Membership, id)
-    return render_template('clients/membership_info.html', membership=membership)
+def view_membership(id: int): #select membership
+    client = db.session.get_or_404(Client, id)
+    return render_template('clients/membership_info.html', client=client)
 
 @clients_bp.route('/<int:id>/membership/add', methods=['GET', 'POST'])
 @admin_required

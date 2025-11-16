@@ -38,3 +38,6 @@ class LoginForm(FlaskForm):
     username = StringField('Login', validators=[DataRequired()])
     password = StringField('Hasło', validators=[DataRequired()])
     remember_me = BooleanField('Zapamiętaj mnie')
+
+class MembershipForm(FlaskForm):
+    pass
