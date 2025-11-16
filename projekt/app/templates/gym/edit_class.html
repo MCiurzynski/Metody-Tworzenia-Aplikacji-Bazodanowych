@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Edycja Zajęć{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow border-warning">
+            <div class="card-header bg-warning text-dark">
+                <h4 class="mb-0">Edycja: {{ group_class.name }}</h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form.name.label(class="form-label fw-bold") }}
+                        {{ form.name(class="form-control") }}
+                        {% for error in form.name.errors %} <div class="text-danger small">{{ error }}</div> {% endfor %}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.day.label(class="form-label fw-bold") }}
+                            {{ form.day(class="form-select") }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.start_hour.label(class="form-label fw-bold") }}
+                            {{ form.start_hour(class="form-control") }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.length.label(class="form-label fw-bold") }}
+                            <div class="input-group">
+                                {{ form.length(class="form-control") }}
+                                <span class="input-group-text">min</span>
+                            </div>
+                            {% for error in form.length.errors %} <div class="text-danger small">{{ error }}</div> {% endfor %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.trainer_id.label(class="form-label fw-bold") }}
+                            {{ form.trainer_id(class="form-select") }}
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mt-3">
+                        <a href="{{ url_for('gym.view_classes') }}" class="btn btn-outline-secondary">Anuluj</a>
+                        <button type="submit" class="btn btn-warning px-5">Zapisz Zmiany</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

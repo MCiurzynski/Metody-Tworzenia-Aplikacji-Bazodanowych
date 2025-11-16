@@ -7,7 +7,7 @@ from flask import (
 from app.db import db, Client, Membership, MembershipType, Employee, Trainer, GroupClass
 from flask_login import login_user, logout_user, login_required, current_user
 from app.routes.auth import employee_required, owner_required
-from app.forms import MembershipTypeForm, RegistrationForm, PersonForm
+from app.forms import MembershipTypeForm, RegistrationForm, PersonForm, GroupClassForm
 from flask import abort
 from app.services import create_user_with_profile
 
@@ -169,26 +169,65 @@ def edit_trainer(id: int):
 
 
 @gym_bp.route('/classes')
-@employee_required
 def view_classes():
-    pass
+    classes = db.session.execute(db.select(GroupClass)).scalars().all()
+    return render_template('gym/view_classes.html', classes=classes)
 
 @gym_bp.route('/classes/<int:id>')
-@employee_required
 def view_class(id: int):
-    pass
+    group_class = db.get_or_404(GroupClass, id)
+    return render_template('gym/view_class.html', group_class=group_class)
 
 @gym_bp.route('/classes/add', methods=['GET', 'POST'])
 @employee_required
 def add_class():
-    pass
+    form = GroupClassForm()
+    
+    active_trainers = db.session.execute(
+        db.select(Trainer).where(Trainer.active == True)
+    ).scalars().all()
+    
+    form.trainer_id.choices = [
+        (t.id, f"{t.first_name} {t.last_name}") for t in active_trainers
+    ]
+    if form.validate_on_submit():
+        new_class = GroupClass(
+            name=form.name.data,
+            day=form.day.data,
+            start_hour=form.start_hour.data,
+            length=form.length.data,
+            trainer_id=form.trainer_id.data
+        )
+        
+        db.session.add(new_class)
+        db.session.commit()
+        
+        flash(f'Dodano zajęcia "{new_class.name}" do grafiku.', 'success')
+        return redirect(url_for('gym.view_classes'))
+    else:
+        print(form.errors)
+    return render_template('gym/add_class.html', form=form)
 
 @gym_bp.route('/classes/<int:id>/delete', methods=['POST'])
 @employee_required
 def delete_class(id: int):
-    pass
+    group_class = db.get_or_404(GroupClass, id)
+    db.session.delete(group_class)
+    db.session.commit()
+    return redirect(url_for('gym.view_classes'))
 
 @gym_bp.route('/classes/<int:id>/edit', methods=['GET', 'POST'])
 @employee_required
 def edit_class(id: int):
-    pass
+    group_class = db.get_or_404(GroupClass, id)
+    form = GroupClassForm(obj=group_class)
+    active_trainers = db.session.execute(db.select(Trainer).where(Trainer.active == True)).scalars().all()
+
+    form.trainer_id.choices = [(t.id, f'{t.first_name} {t.last_name}') for t in active_trainers]
+
+    if form.validate_on_submit():
+        form.populate_obj(group_class)
+        db.session.commit()
+        flash('Zaktualizowano dane zajęć grupowych', 'success')
+        return redirect(url_for('gym.view_classes'))
+    return render_template('gym/edit_class.html', form=form, group_class=group_class)

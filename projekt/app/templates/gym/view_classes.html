@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Grafik Zajęć{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Grafik Zajęć Grupowych</h2>
+        
+        {% if current_user.role in ['employee', 'owner'] %}
+            <a href="{{ url_for('gym.add_class') }}" class="btn btn-success">
+                📅 Dodaj Zajęcia
+            </a>
+        {% endif %}
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle text-center">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Dzień</th>
+                            <th>Godzina</th>
+                            <th>Nazwa</th>
+                            <th>Czas</th>
+                            <th>Trener</th>
+                            <th>Akcje</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for class in classes %}
+                        <tr>
+                            <td class="fw-bold text-primary">
+                                {% if class.day == 0 %}Poniedziałek
+                                {% elif class.day == 1 %}Wtorek
+                                {% elif class.day == 2 %}Środa
+                                {% elif class.day == 3 %}Czwartek
+                                {% elif class.day == 4 %}Piątek
+                                {% elif class.day == 5 %}Sobota
+                                {% else %}Niedziela{% endif %}
+                            </td>
+                            <td>{{ class.start_hour.strftime('%H:%M') }}</td>
+                            <td class="fw-bold">{{ class.name }}</td>
+                            <td>{{ class.length }} min</td>
+                            <td>
+                                <a href="{{ url_for('gym.view_trainer', id=class.trainer.id) }}" class="text-decoration-none">
+                                    {{ class.trainer.first_name }} {{ class.trainer.last_name }}
+                                </a>
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="{{ url_for('gym.view_class', id=class.id) }}" class="btn btn-sm btn-outline-info">Szczegóły</a>
+
+                                    {% if current_user.role in ['employee', 'owner'] %}
+                                        <a href="{{ url_for('gym.edit_class', id=class.id) }}" class="btn btn-sm btn-outline-warning">Edytuj</a>
+                                        <form action="{{ url_for('gym.delete_class', id=class.id) }}" method="post" class="d-inline" onsubmit="return confirm('Czy na pewno usunąć te zajęcia?');">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Usuń</button>
+                                        </form>
+                                    {% endif %}
+
+                                    {% if current_user.role == 'client' %}
+                                        <button class="btn btn-sm btn-success">Zapisz się</button>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="text-muted py-4">Grafik jest pusty.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

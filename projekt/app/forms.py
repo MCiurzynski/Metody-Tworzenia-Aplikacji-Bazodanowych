@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, EmailField, BooleanField, IntegerField, FloatField, DateField, SelectField
-from wtforms.validators import DataRequired, Length, Regexp, Email, EqualTo, ValidationError, NumberRange
+from wtforms import StringField, PasswordField, EmailField, BooleanField, IntegerField, FloatField, DateField, SelectField, TimeField
+from wtforms.validators import DataRequired, Length, Regexp, Email, EqualTo, ValidationError, NumberRange, InputRequired
 from app.db import db, User
 from datetime import date
 
@@ -60,3 +60,28 @@ class AssignMembershipForm(FlaskForm):
     membership_type_id = SelectField('Wybierz karnet', coerce=int, validators=[DataRequired()])
     
     start_date = DateField('Data rozpoczęcia', default=date.today, validators=[DataRequired()])
+
+class GroupClassForm(FlaskForm):
+    name = StringField('Nazwa zajęć', validators=[
+        DataRequired(), 
+        Length(min=2, max=100, message="Nazwa musi mieć od 2 do 100 znaków")
+    ])
+    
+    day = SelectField('Dzień tygodnia', coerce=int, choices=[
+        (0, 'Poniedziałek'),
+        (1, 'Wtorek'),
+        (2, 'Środa'),
+        (3, 'Czwartek'),
+        (4, 'Piątek'),
+        (5, 'Sobota'),
+        (6, 'Niedziela')
+    ], validators=[InputRequired()])
+    
+    start_hour = TimeField('Godzina rozpoczęcia', validators=[DataRequired()])
+    
+    length = IntegerField('Czas trwania (min)', validators=[
+        DataRequired(), 
+        NumberRange(min=15, max=240, message="Zajęcia muszą trwać od 15 do 240 minut")
+    ])
+    
+    trainer_id = SelectField('Prowadzący Trener', coerce=int, validators=[DataRequired()])

@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ group_class.name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow border-info">
+                <div class="card-header bg-info text-white text-center">
+                    <h3 class="mb-0">{{ group_class.name }}</h3>
+                </div>
+                <div class="card-body text-center">
+                    <div class="row mb-4 fs-5">
+                        <div class="col-md-6">
+                            <strong>Dzień:</strong> 
+                            {% if group_class.day == 0 %}Poniedziałek
+                            {% elif group_class.day == 1 %}Wtorek
+                            {% elif group_class.day == 2 %}Środa
+                            {% elif group_class.day == 3 %}Czwartek
+                            {% elif group_class.day == 4 %}Piątek
+                            {% elif group_class.day == 5 %}Sobota
+                            {% else %}Niedziela{% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Godzina:</strong> {{ group_class.start_hour.strftime('%H:%M') }}
+                        </div>
+                    </div>
+                    
+                    <p><strong>Czas trwania:</strong> {{ group_class.length }} minut</p>
+                    <p>
+                        <strong>Prowadzący:</strong> 
+                        <a href="{{ url_for('gym.view_trainer', id=group_class.trainer.id) }}">
+                            {{ group_class.trainer.first_name }} {{ group_class.trainer.last_name }}
+                        </a>
+                    </p>
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between mt-3">
+                        <a href="{{ url_for('gym.view_classes') }}" class="btn btn-outline-secondary">← Powrót do grafiku</a>
+                        
+                        {% if current_user.role == 'client' %}
+                            <button class="btn btn-success px-5">Zapisz się na zajęcia</button>
+                        {% endif %}
+
+                        {% if current_user.role in ['employee', 'owner'] %}
+                            <a href="{{ url_for('gym.edit_class', id=group_class.id) }}" class="btn btn-warning">Edytuj Zajęcia</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header">Lista uczestników ({{ group_class.participations|length }})</div>
+                <div class="card-body">
+                    {% if group_class.participations %}
+                        <ul>
+                        {% for p in group_class.participations %}
+                            <li>{{ p.client.first_name }} {{ p.client.last_name }}</li>
+                        {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted">Brak zapisanych osób.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
