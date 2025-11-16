@@ -11,14 +11,29 @@
             </div>
             <div class="card-body">
                 <form method="post">
+                    {{ form.hidden_tag() }}
+
                     <div class="mb-3">
-                        <label for="username" class="form-label">Nazwa użytkownika</label>
-                        <input type="text" name="username" id="username" class="form-control" required>
+                        {{ form.username.label(class="form-label") }}
+                        {{ form.username(class="form-control") }}
+                        {% for error in form.username.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
                     </div>
+
                     <div class="mb-3">
-                        <label for="password" class="form-label">Hasło</label>
-                        <input type="password" name="password" id="password" class="form-control" required>
+                        {{ form.password.label(class="form-label") }}
+                        {{ form.password(class="form-control") }}
+                        {% for error in form.password.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
                     </div>
+
+                    <div class="mb-3 form-check">
+                        {{ form.remember_me(class="form-check-input") }}
+                        {{ form.remember_me.label(class="form-check-label") }}
+                    </div>
+
                     <div class="d-grid">
                         <button type="submit" class="btn btn-primary">Zaloguj się</button>
                     </div>
