@@ -37,6 +37,10 @@ def create_app(test_config: dict=None, config_class=Config):
 
     app.register_blueprint(gym_bp)
 
+    from app.routes.clients import clients_bp
+
+    app.register_blueprint(clients_bp)
+
     return app
 
 @login_manager.user_loader

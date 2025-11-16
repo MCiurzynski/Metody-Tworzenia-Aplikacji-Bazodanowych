@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Profil Trenera{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-dark text-white text-center">
+                    <h4 class="mb-0">{{ trainer.first_name }} {{ trainer.last_name }}</h4>
+                    {% if not trainer.active %}
+                        <span class="badge bg-warning text-dark mt-2">Nieaktywny</span>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <p><strong>Email:</strong> {{ trainer.user.email }}</p>
+                    <p><strong>Telefon:</strong> {{ trainer.phone_number }}</p>
+                    <p><strong>PESEL:</strong> {{ trainer.pesel }}</p>
+                    
+                    {% if current_user.role == 'owner' and trainer.active %}
+                        <div class="d-grid mt-4">
+                            <a href="{{ url_for('gym.edit_trainer', id=trainer.id) }}" class="btn btn-warning">Edytuj Dane</a>
+                        </div>
+                    {% endif %}
+                    <div class="d-grid mt-2">
+                        <a href="{{ url_for('gym.view_trainers') }}" class="btn btn-outline-secondary">Wróć do listy</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card shadow border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">Prowadzone Zajęcia</h5>
+                </div>
+                <div class="card-body">
+                    {% if trainer.group_classes %}
+                        <div class="list-group">
+                            {% for class in trainer.group_classes %}
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-0">{{ class.name }}</h6>
+                                        <small class="text-muted">
+                                            {% if class.day == 0 %}Poniedziałek
+                                            {% elif class.day == 1 %}Wtorek
+                                            {% elif class.day == 2 %}Środa
+                                            {% elif class.day == 3 %}Czwartek
+                                            {% elif class.day == 4 %}Piątek
+                                            {% elif class.day == 5 %}Sobota
+                                            {% else %}Niedziela{% endif %}
+                                            | Godz: {{ class.start_hour }}
+                                        </small>
+                                    </div>
+                                    <span class="badge bg-info rounded-pill">{{ class.length }} min</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center my-4">Ten trener nie ma obecnie przypisanych żadnych zajęć.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

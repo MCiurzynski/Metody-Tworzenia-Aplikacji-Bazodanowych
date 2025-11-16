@@ -4,7 +4,7 @@ import re
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for, Response
 )
-from app.db import db, Client, Membership, MembershipType, Employee
+from app.db import db, Client, Membership, MembershipType, Employee, Trainer, GroupClass
 from flask_login import login_user, logout_user, login_required, current_user
 from app.routes.auth import employee_required, owner_required
 from app.forms import MembershipTypeForm, RegistrationForm, PersonForm
@@ -120,27 +120,53 @@ def edit_employee(id: int):
 @gym_bp.route('/trainer')
 @employee_required
 def view_trainers():
-    pass
+    trainers = db.session.execute(db.select(Trainer)).scalars().all()
+    return render_template('gym/view_trainers.html', trainers=trainers)
 
 @gym_bp.route('/trainer/<int:id>')
 @employee_required
-def view_trainer():
-    pass
+def view_trainer(id):
+    trainer = db.get_or_404(Trainer, id)
+    return render_template('gym/view_trainer.html', trainer=trainer)
 
 @gym_bp.route('/trainer/add', methods=['GET', 'POST'])
 @owner_required
 def add_trainer():
-    pass
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        success, message = create_user_with_profile(form, 'trainer')
+        if success:
+            flash(message, 'success')
+            return redirect(url_for('gym.view_trainers'))
+        else:
+            flash(message, 'danger')
+    return render_template('gym/add_trainer.html', form=form)
 
-@gym_bp.route('/trainer/<int:id>/delete', methods=['GET', 'POST'])
+
+@gym_bp.route('/trainer/<int:id>/delete', methods=['POST'])
 @owner_required
 def delete_trainer(id: int):
-    pass
+    trainer = db.get_or_404(Trainer, id)
+    if len(trainer.group_classes) == 0:
+        trainer.active = False
+        db.session.commit()
+        flash('Udało się usunąć trenera', 'success')
+    else:
+        flash('Nie udało się usunąć trenera. Ma on przypisane zajęcia grupowe', 'danger')
+    return redirect(url_for('gym.view_trainers'))
 
 @gym_bp.route('/trainer/<int:id>/edit', methods=['GET', 'POST'])
 @owner_required
 def edit_trainer(id: int):
-    pass
+    trainer = db.get_or_404(Trainer, id)
+    form = PersonForm(obj=trainer)
+    if form.validate_on_submit():
+        form.populate_obj(trainer)
+        db.session.commit()
+        flash('Zaktualizowano dane trenera', 'success')
+        return redirect(url_for('gym.view_trainers'))
+    return render_template('gym/edit_trainer.html', form=form, trainer=trainer)
+
 
 @gym_bp.route('/classes')
 @employee_required
@@ -152,17 +178,17 @@ def view_classes():
 def view_class(id: int):
     pass
 
-@gym_bp.route('/classes/add')
+@gym_bp.route('/classes/add', methods=['GET', 'POST'])
 @employee_required
 def add_class():
     pass
 
-@gym_bp.route('/classes/<int:id>/delete')
+@gym_bp.route('/classes/<int:id>/delete', methods=['POST'])
 @employee_required
 def delete_class(id: int):
     pass
 
-@gym_bp.route('/classes/<int:id>/edit')
+@gym_bp.route('/classes/<int:id>/edit', methods=['GET', 'POST'])
 @employee_required
 def edit_class(id: int):
     pass

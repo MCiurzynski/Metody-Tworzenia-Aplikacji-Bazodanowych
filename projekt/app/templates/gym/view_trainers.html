@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}Lista Trenerów{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Kadra Trenerska</h2>
+        {% if current_user.role == 'owner' %}
+        <a href="{{ url_for('gym.add_trainer') }}" class="btn btn-warning text-dark">
+            💪 Dodaj Trenera
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Imię i Nazwisko</th>
+                        <th>Telefon</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th class="text-end">Akcje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for trainer in trainers %}
+                        <tr class="{{ 'table-secondary text-muted' if not trainer.active else '' }}">
+                            <td>
+                                <strong>{{ trainer.first_name }} {{ trainer.last_name }}</strong>
+                            </td>
+                            <td>{{ trainer.phone_number }}</td>
+                            <td>{{ trainer.user.email }}</td>
+                            <td>
+                                {% if trainer.active %}
+                                    <span class="badge bg-success">Aktywny</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Archiwum</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group" role="group">
+                                    <a href="{{ url_for('gym.view_trainer', id=trainer.id) }}" class="btn btn-sm btn-outline-info">Info</a>
+                                    
+                                    {% if current_user.role == 'owner' and trainer.active %}
+                                        <a href="{{ url_for('gym.edit_trainer', id=trainer.id) }}" class="btn btn-sm btn-outline-primary">Edytuj</a>
+                                        
+                                        <form action="{{ url_for('gym.delete_trainer', id=trainer.id) }}" method="post" class="d-inline" onsubmit="return confirm('Czy na pewno chcesz usunąć trenera?');">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Usuń</button>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center py-4 text-muted">Brak trenerów.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
