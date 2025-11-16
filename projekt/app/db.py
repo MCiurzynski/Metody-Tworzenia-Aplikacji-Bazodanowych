@@ -40,7 +40,7 @@ class Person(db.Model):
     last_name: Mapped[str] = mapped_column(String(256), nullable=False)
     pesel: Mapped[str] = mapped_column(String(11), unique=True, nullable=False)
     phone_number: Mapped[str] = mapped_column(String(15), nullable=False)
-
+    active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=True, unique=True)
     user: Mapped["User"] = relationship(back_populates="person_profile")
 
