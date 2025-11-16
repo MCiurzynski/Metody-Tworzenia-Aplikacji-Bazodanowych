@@ -1,48 +1,56 @@
 import functools
-import re
 
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for, Response
 )
 from app.db import db, User, Client
+from app.forms import RegistrationForm, LoginForm
+from app.services import create_user_with_profile
 from flask_login import login_user, logout_user, login_required, current_user
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/')
 
-@auth_bp.route('/register', methods=('GET', 'POST'))
+@auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
-    if request.method == 'POST':
-        username = request.form['username'] #TODO validation
-        email = request.form['email']
-        password = request.form['password']
-        first_name = request.form['first_name']
-        last_name = request.form['last_name']
-        pesel = request.form['pesel']
-        phone_number = request.form['phone_number']
-        user = User(username=username, email=email)
-        user.set_password(password)
-        client = Client(first_name=first_name, last_name=last_name, pesel=pesel, phone_number=phone_number, user=user)
-        db.session.add_all([user, client])
-        db.session.commit()
-        return redirect(url_for('auth.login'))
-    return render_template('auth/register.html')
+    form = RegistrationForm()
+
+    if form.validate_on_submit():
+        success, message = create_user_with_profile(form, role='client')
+        
+        if success:
+            flash(message, 'success')
+            return redirect(url_for('auth.login'))
+        else:
+            flash(message, 'danger')
+
+    return render_template('auth/register.html', form=form)
 
 @auth_bp.route('/login', methods=('GET', 'POST'))
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
     
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        user = db.session.execute(db.select(User).where(User.username == username)).scalar()
-        if user is None or not user.check_password(password):
-            flash('Nieprawidłowy login lub hasło.')
+    form = LoginForm()
+
+    if form.validate_on_submit():
+
+        user = db.session.execute(
+            db.select(User).where(User.username == form.username.data)
+        ).scalar()
+
+        if user is None or not user.check_password(form.password.data):
+            flash('Nieprawidłowy login lub hasło.', 'danger')
             return redirect(url_for('auth.login'))
-        login_user(user)
+
+        login_user(user, remember=form.remember_me.data)
+        
         next_page = request.args.get('next')
-        return redirect(next_page or url_for('main.index'))
-    return render_template('auth/login.html')
+        if not next_page or not next_page.startswith('/'):
+            next_page = url_for('main.index')
+            
+        return redirect(next_page)
+
+    return render_template('auth/login.html', form=form)
 
 @auth_bp.route('/logout')
 @login_required
