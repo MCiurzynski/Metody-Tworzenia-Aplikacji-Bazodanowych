@@ -59,10 +59,10 @@ def logout():
     flash('Wylogowano pomyślnie.')
     return redirect(url_for('main.index'))
 
-def admin_required(view):
+def employee_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
-        if not current_user.is_authenticated or current_user.role != 'admin':
+        if not current_user.is_authenticated or current_user.role != 'employee':
             return redirect(url_for('main.index'))
         return view(**kwargs)
     return wrapped_view

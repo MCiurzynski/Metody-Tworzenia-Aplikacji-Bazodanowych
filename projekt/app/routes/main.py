@@ -1,8 +1,6 @@
-from flask import (
-    Blueprint, flash, g, redirect, render_template, request, session, url_for, Response
-)
-from app.db import db, User
-from flask_login import login_user, logout_user, login_required, current_user
+from flask import Blueprint, flash, render_template
+
+from flask_login import login_required, current_user
 
 main_bp = Blueprint('main', __name__, url_prefix='/')
 
@@ -11,11 +9,13 @@ main_bp = Blueprint('main', __name__, url_prefix='/')
 def index():
     if not current_user.is_authenticated:
         return render_template('main/default.html')
-    if current_user.role == 'admin':
-        return render_template('main/admin.html')
+    if current_user.role == 'employee':
+        return render_template('main/employee.html')
     if current_user.role == 'trainer':
         return render_template('main/trainer.html')
     if current_user.role == 'client':
         return render_template('main/client.html')
+    if current_user.role == 'owner':
+        return render_template('main/owner.html')
     else:
         return render_template('main/default.html')

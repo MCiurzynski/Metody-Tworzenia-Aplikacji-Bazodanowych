@@ -23,8 +23,7 @@ class User(UserMixin, db.Model):
     
     role: Mapped[str] = mapped_column(String(20), nullable=False, default='client')
 
-    client_profile: Mapped[Optional["Client"]] = relationship(back_populates="user", uselist=False)
-    trainer_profile: Mapped[Optional["Trainer"]] = relationship(back_populates="user", uselist=False)
+    person_profile: Mapped[Optional["Person"]] = relationship(back_populates="user", uselist=False)
 
     def set_password(self, password):
         self.password_hash = argon2.hash(password)
@@ -32,19 +31,58 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return argon2.verify(password, self.password_hash)
 
-class Client(db.Model):
-    __tablename__ = "client"
+class Person(db.Model):
+    __tablename__ = "person"
     
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+
     first_name: Mapped[str] = mapped_column(String(256), nullable=False)
     last_name: Mapped[str] = mapped_column(String(256), nullable=False)
     pesel: Mapped[str] = mapped_column(String(11), unique=True, nullable=False)
     phone_number: Mapped[str] = mapped_column(String(15), nullable=False)
+
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=True, unique=True)
+    user: Mapped["User"] = relationship(back_populates="person_profile")
+
+    type: Mapped[str] = mapped_column(String(50))
+
+    __mapper_args__ = {
+        "polymorphic_identity": "person",
+        "polymorphic_on": "type",
+    }
+
+class Client(Person):
+    __tablename__ = "client"
+    
+    id: Mapped[int] = mapped_column(ForeignKey("person.id"), primary_key=True)
 
     memberships: Mapped[List["Membership"]] = relationship(back_populates="client")
     participations: Mapped[List["Participation"]] = relationship(back_populates="client")
-    user: Mapped["User"] = relationship(back_populates="client_profile")
+
+    __mapper_args__ = {
+        "polymorphic_identity": "client",
+    }
+
+class Trainer(Person):
+    __tablename__ = "trainer"
+    id: Mapped[int] = mapped_column(ForeignKey("person.id"), primary_key=True)
+
+    group_classes: Mapped[List["GroupClass"]] = relationship(back_populates="trainer")
+
+    __mapper_args__ = {
+        "polymorphic_identity": "trainer",
+    }
+
+class Employee(Person):
+    __tablename__ = "employee"
+    id: Mapped[int] = mapped_column(ForeignKey("person.id"), primary_key=True)
+    __mapper_args__ = { "polymorphic_identity": "employee" }
+
+class Owner(Person):
+    __tablename__ = "owner"
+    id: Mapped[int] = mapped_column(ForeignKey("person.id"), primary_key=True)
+    __mapper_args__ = { "polymorphic_identity": "owner" }
+
 
 class Membership(db.Model):
     __tablename__ = "membership"
@@ -54,25 +92,11 @@ class Membership(db.Model):
     price: Mapped[float] = mapped_column(nullable=False)
     start_date: Mapped[date] = mapped_column(Date, nullable=False) 
     end_date: Mapped[date] = mapped_column(Date, nullable=False)
-    client_id: Mapped[int] = mapped_column(ForeignKey("client.id"))
-
+    client_id: Mapped[int] = mapped_column(ForeignKey("client.id")) 
     client: Mapped["Client"] = relationship(back_populates="memberships")
 
     def is_active(self):
         return self.start_date >= date.today() and self.end_date <= date.today()
-
-class Trainer(db.Model):
-    __tablename__ = "trainer"
-
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    first_name: Mapped[str] = mapped_column(String(256), nullable=False)
-    last_name: Mapped[str] = mapped_column(String(256), nullable=False)
-    pesel: Mapped[str] = mapped_column(String(11), unique=True, nullable=False)
-    phone_number: Mapped[str] = mapped_column(String(15), nullable=False)
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=True, unique=True)
-
-    group_classes: Mapped[List["GroupClass"]] = relationship(back_populates="trainer")
-    user: Mapped["User"] = relationship(back_populates="trainer_profile")
 
 class GroupClass(db.Model):
     __tablename__ = "group_class"
@@ -112,9 +136,9 @@ def init_db_command():
 def init_app(app):
     db.init_app(app)
     app.cli.add_command(init_db_command)
-    app.cli.add_command(add_admin_command)
+    app.cli.add_command(add_owner_command)
 
-def add_admin(username, email, password):
+def add_owner(username, email, password, first_name, last_name, pesel, phone):
     existing_user = db.session.execute(
         db.select(User).where((User.username == username) | (User.email == email))
     ).scalar()
@@ -123,18 +147,21 @@ def add_admin(username, email, password):
         click.echo(click.style(f"Błąd: Użytkownik {username} lub email {email} już istnieje!", fg='red'))
         return
 
-    new_admin = User(
-        username=username,
-        email=email,
-        role='admin'
-    )
+    new_user = User(username=username, email=email, role='owner')
+    new_user.set_password(password)
     
-    new_admin.set_password(password)
+    new_owner = Owner(
+        first_name=first_name,
+        last_name=last_name,
+        pesel=pesel,
+        phone_number=phone,
+        user=new_user
+    )
 
     try:
-        db.session.add(new_admin)
+        db.session.add(new_owner)
         db.session.commit()
-        click.echo(click.style(f"Sukces! Administrator {username} został utworzony.", fg='green'))
+        click.echo(click.style(f"Sukces! Właściciel {username} został utworzony.", fg='green'))
     except Exception as e:
         db.session.rollback()
         click.echo(click.style(f"Wystąpił błąd bazy danych: {e}", fg='red'))
@@ -142,8 +169,11 @@ def add_admin(username, email, password):
 @click.command('add-admin')
 @click.argument('username')
 @click.argument('email')
+@click.argument('first_name')
+@click.argument('last_name')
+@click.argument('pesel')
+@click.argument('phone')
 @click.password_option()
-def add_admin_command(username, email, password):
-    """Clear the existing data and create new tables"""
-    add_admin(username, email, password)
-    click.echo('Added admin')
+def add_owner_command(username, email, password, first_name, last_name, pesel, phone):
+    """Adds new owner"""
+    add_owner(username, email, password, first_name, last_name, pesel, phone)
