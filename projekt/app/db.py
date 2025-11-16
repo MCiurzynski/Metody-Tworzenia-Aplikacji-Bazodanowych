@@ -2,7 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from typing import List, Optional
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy import String, Integer, ForeignKey, Date, Time
-from datetime import date, time
+from datetime import date, time, timedelta
 import click
 from flask import current_app
 from flask_login import UserMixin
@@ -84,19 +84,37 @@ class Owner(Person):
     __mapper_args__ = { "polymorphic_identity": "owner" }
 
 
-class Membership(db.Model):
-    __tablename__ = "membership"
+class MembershipType(db.Model):
+    __tablename__ = "membership_type"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(50), nullable=False)
     price: Mapped[float] = mapped_column(nullable=False)
+    duration: Mapped[int] = mapped_column(nullable=False) # długość w dniach
+    
+    memberships: Mapped[List['Membership']] = relationship(back_populates="type")
+
+
+class Membership(db.Model):
+    __tablename__ = "membership"
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     start_date: Mapped[date] = mapped_column(Date, nullable=False) 
-    end_date: Mapped[date] = mapped_column(Date, nullable=False)
     client_id: Mapped[int] = mapped_column(ForeignKey("client.id")) 
     client: Mapped["Client"] = relationship(back_populates="memberships")
+    type_id: Mapped[int] = mapped_column(ForeignKey("membership_type.id"))
+    type: Mapped['MembershipType'] = relationship(back_populates="memberships")
 
+    @property
+    def end_date(self):
+        if self.start_date and self.type:
+            return self.start_date + timedelta(days=self.type.duration)
+        return None
+
+    @property
     def is_active(self):
-        return self.start_date >= date.today() and self.end_date <= date.today()
+        today = date.today()
+        return self.start_date <= today and self.end_date >= today
 
 class GroupClass(db.Model):
     __tablename__ = "group_class"
