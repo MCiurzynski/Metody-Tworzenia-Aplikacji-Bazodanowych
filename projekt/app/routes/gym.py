@@ -8,13 +8,15 @@ from app.db import db, Client, Membership, MembershipType
 from flask_login import login_user, logout_user, login_required, current_user
 from app.routes.auth import employee_required, owner_required
 from app.forms import MembershipTypeForm
+from flask import abort
 
 gym_bp = Blueprint('gym', __name__, url_prefix='/')
 
-@gym_bp.route('/membership/type', methods=['GET'])
+@gym_bp.route('/membership/type')
 @employee_required
 def view_membership_types():
-    pass
+    mem_types = db.session.execute(db.select(MembershipType)).scalars().all()
+    return render_template('gym/view_membership_types.html', mem_types=mem_types)
 
 @gym_bp.route('/membership/type/add', methods=['GET', 'POST'])
 @owner_required
@@ -36,12 +38,19 @@ def add_membership_type():
 @gym_bp.route('/membership/type/<int:id>/delete', methods=['POST'])
 @owner_required
 def delete_membership_type(id: int):
-    pass
+    mem_type = db.session.get(MembershipType, id)
+    if mem_type is None:
+        abort(404, f'Karnet id {id} nie istnieje')
+    mem_type.active = False
+    db.session.commit()
+    return redirect(url_for('gym.view_membership_types'))
 
 @gym_bp.route('/membership/type/<int:id>/edit', methods=['GET', 'POST'])
 @owner_required
 def edit_membership_type(id: int):
-    mem_type = db.session.get_or_404(MembershipType, id)
+    mem_type = db.session.get(MembershipType, id)
+    if mem_type is None:
+        abort(404, f'Karnet id {id} nie istnieje')
     
     form = MembershipTypeForm(obj=mem_type)
     
