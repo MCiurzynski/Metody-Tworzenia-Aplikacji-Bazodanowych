@@ -121,11 +121,13 @@ def edit_employee(id: int):
 
 
 @gym_bp.route('/trainer')
+@employee_required
 def view_trainers():
     trainers = db.session.execute(db.select(Trainer)).scalars().all()
     return render_template('gym/view_trainers.html', trainers=trainers)
 
 @gym_bp.route('/trainer/<int:id>')
+@employee_required
 def view_trainer(id):
     trainer = db.get_or_404(Trainer, id)
     return render_template('gym/view_trainer.html', trainer=trainer)
