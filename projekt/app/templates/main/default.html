@@ -3,9 +3,9 @@
 {% block title %}Witamy{% endblock %}
 
 {% block content %}
-<div class="p-5 mb-4 bg-light rounded-3 shadow-sm text-center">
+<div class="p-4 mb-3 bg-light rounded-3 shadow-sm text-center">
     <div class="container-fluid py-5">
-        <h1 class="display-4 fw-bold text-primary">Twoja Najlepsza Forma 🏋️</h1>
+        <h1 class="display-4 fw-bold text-primary">Stwórz z nami formę życia!</h1>
         <p class="col-md-8 fs-4 mx-auto mt-3">Dołącz do społeczności, która motywuje. Profesjonalny sprzęt, najlepsi trenerzy i atmosfera sukcesu.</p>
         <div class="mt-4">
             <a class="btn btn-primary btn-lg px-5 me-2" href="{{ url_for('auth.register') }}">Zarejestruj się</a>
@@ -14,30 +14,18 @@
     </div>
 </div>
 
-<div class="row text-center mt-5">
-    <div class="col-md-4">
-        <div class="card border-0">
+<p class="h1 text-primary">Cennik</p>
+<div class="row text-center">
+    {% for mem_type in mem_types %}
+    <div class="col-md-4 my-3">
+        <div class="card">
+            <h3 class="text-success card-header">{{ mem_type.name }}</h3>
             <div class="card-body">
-                <h3 class="text-primary">💪 Siłownia</h3>
-                <p>Strefa wolnych ciężarów i maszyn izolowanych.</p>
+                <p class="h4">{{ mem_type.price }} zł</p>
+                <p class="h4">{{ mem_type.duration }} dni</p>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card border-0">
-            <div class="card-body">
-                <h3 class="text-success">🧘‍♀️ Fitness</h3>
-                <p>Szeroki wybór zajęć grupowych w cenie karnetu.</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card border-0">
-            <div class="card-body">
-                <h3 class="text-warning">🧖‍♂️ Relaks</h3>
-                <p>Sauna fińska dostępna dla klubowiczów.</p>
-            </div>
-        </div>
-    </div>
+    {% endfor %}
 </div>
 {% endblock %}

@@ -11,13 +11,58 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
   <div class="container">
-    <a class="navbar-brand" href="{{ url_for('main.index') }}">🏋️ Siłownia</a>
+    <a class="navbar-brand" href="{{ url_for('main.index') }}">Siłownia</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
     </button>
     
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
+      
+      <ul class="navbar-nav me-auto">
+        {% if current_user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link text-light" href="{{ url_for('main.index') }}">Strona główna</a>
+          </li>
+          {% if current_user.role == 'owner' %}
+          <li class="nav-item">
+            <a class="nav-link text-light" href="{{ url_for('gym.view_employees') }}">Lista Pracowników</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-light" href="{{ url_for('gym.view_trainers') }}">Lista Trenerów</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-light" href="{{ url_for('gym.view_membership_types') }}">Oferta Karnetów</a>
+          </li>
+          {% endif %}
+          {% if current_user.role == 'employee' %}
+          <li class="nav-item">
+            <a class="nav-link text-light" href="{{ url_for('clients.index') }}">Lista Klientów</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-light" href="{{ url_for('gym.view_classes') }}">Lista Zajęć</a>
+          </li>
+          {% endif %}
+          {% if current_user.role == 'trainer' %}
+          <li class="nav-item">
+            <a class="nav-link text-light" href="{{ url_for('gym.view_classes') }}">Mój Grafik#todo</a>
+          </li>
+          {% endif %}
+          {% if current_user.role == 'client' %}
+          <li class="nav-item">
+            <a class="nav-link text-light" href="{{ url_for('main.index') }}">Mój Plan#todo</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-light" href="{{ url_for('gym.view_classes') }}">Grafik Zajęć</a>
+          </li>
+          {% endif %}
+        {% else %}
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('main.index') }}">Strona główna</a>
+          </li>
+        {% endif %}
+      </ul>
+      
+      <ul class="navbar-nav">
         {% if current_user.is_authenticated %}
           <li class="nav-item">
             <span class="nav-link text-light">Witaj, {{ current_user.person_profile.first_name }}</span>
@@ -34,6 +79,7 @@
           </li>
         {% endif %}
       </ul>
+      
     </div>
   </div>
 </nav>

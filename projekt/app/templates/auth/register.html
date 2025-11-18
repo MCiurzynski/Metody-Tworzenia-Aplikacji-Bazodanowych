@@ -32,20 +32,15 @@
                         {% endfor %}
                     </div>
 
-                    <div class="mb-3">
-                        {{ form.password.label(class="form-label") }}
-                        {{ form.password(class="form-control") }}
-                        {% for error in form.password.errors %}
-                            <div class="text-danger small mt-1">{{ error }}</div>
-                        {% endfor %}
-                    </div>
-
-                    <div class="mb-3">
-                        {{ form.confirm_password.label(class="form-label") }}
-                        {{ form.confirm_password(class="form-control") }}
-                        {% for error in form.confirm_password.errors %}
-                            <div class="text-danger small mt-1">{{ error }}</div>
-                        {% endfor %}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.password.label(class="form-label") }}
+                            {{ form.password(class="form-control") }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.confirm_password.label(class="form-label") }}
+                            {{ form.confirm_password(class="form-control") }}
+                        </div>
                     </div>
 
                     <h5 class="mb-3 mt-4 text-primary border-bottom pb-2">Dane osobowe</h5>
@@ -67,22 +62,23 @@
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        {{ form.pesel.label(class="form-label") }}
-                        {{ form.pesel(class="form-control", maxlength="11") }}
-                        {% for error in form.pesel.errors %}
-                            <div class="text-danger small mt-1">{{ error }}</div>
-                        {% endfor %}
-                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.pesel.label(class="form-label") }}
+                            {{ form.pesel(class="form-control", maxlength="11") }}
+                            {% for error in form.pesel.errors %}
+                                <div class="text-danger small mt-1">{{ error }}</div>
+                            {% endfor %}
+                        </div>
 
-                    <div class="mb-3">
-                        {{ form.phone_number.label(class="form-label") }}
-                        {{ form.phone_number(class="form-control", placeholder="np. 123 456 789") }}
-                        {% for error in form.phone_number.errors %}
-                            <div class="text-danger small mt-1">{{ error }}</div>
-                        {% endfor %}
+                        <div class="col-md-6 mb-3">
+                            {{ form.phone_number.label(class="form-label") }}
+                            {{ form.phone_number(class="form-control", placeholder="np. 123 456 789") }}
+                            {% for error in form.phone_number.errors %}
+                                <div class="text-danger small mt-1">{{ error }}</div>
+                            {% endfor %}
+                        </div>
                     </div>
-
                     <div class="d-grid mt-4">
                         <button type="submit" class="btn btn-success btn-lg">Zarejestruj się</button>
                     </div>
