@@ -6,16 +6,16 @@
 <div class="container">
     <div class="row mb-5">
         <div class="col-12 text-center">
-            <h1 class="fw-bold text-primary">Witaj w strefie klubowicza! 👋</h1>
+            <h1 class="fw-bold text-primary">Witaj w strefie klubowicza!</h1>
             <p class="lead">Zarządzaj swoją formą w jednym miejscu.</p>
         </div>
     </div>
 
     <div class="row g-4 justify-content-center">
-        <div class="col-md-5">
+        <div class="col-md-4">
             <div class="card h-100 shadow-sm border-primary">
                 <div class="card-header bg-primary text-white text-center py-3">
-                    <h4 class="mb-0">🎫 Twój Karnet</h4>
+                    <h4 class="mb-0">Twój Karnet</h4>
                 </div>
                 <div class="card-body text-center d-flex flex-column justify-content-center">
                     {% if current_user.person_profile.memberships %}
@@ -33,15 +33,28 @@
             </div>
         </div>
 
-        <div class="col-md-5">
+        <div class="col-md-4">
             <div class="card h-100 shadow-sm border-danger">
                 <div class="card-header bg-danger text-white text-center py-3">
-                    <h4 class="mb-0">🔥 Grafik Zajęć</h4>
+                    <h4 class="mb-0">Grafik Zajęć</h4>
                 </div>
                 <div class="card-body text-center d-flex flex-column justify-content-center">
                     <p class="card-text fs-5">Zapisz się na Crossfit, Jogę lub Zumbę.</p>
                     <a href="{{ url_for('gym.view_classes') }}" class="btn btn-danger btn-lg w-100 mt-auto">
                         Zobacz Grafik i Zapisz się
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-info">
+                <div class="card-header bg-info text-dark text-center py-3">
+                    <h4 class="mb-0">Mój Plan</h4>
+                </div>
+                <div class="card-body text-center d-flex flex-column justify-content-center">
+                    <p class="card-text fs-5">Zobacz swój plan.</p>
+                    <a href="{{ url_for('gym.view_classes', client_id=current_user.id) }}" class="btn btn-info btn-lg w-100 mt-auto">
+                        Mój Plan Zajęć
                     </a>
                 </div>
             </div>

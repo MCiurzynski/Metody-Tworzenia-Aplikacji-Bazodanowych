@@ -16,7 +16,7 @@ gym_bp = Blueprint('gym', __name__, url_prefix='/')
 @gym_bp.route('/membership/type')
 @employee_required
 def view_membership_types():
-    mem_types = db.session.execute(db.select(MembershipType)).scalars().all()
+    mem_types = db.session.execute(db.select(MembershipType).order_by(MembershipType.active.desc())).scalars().all()
     return render_template('gym/view_membership_types.html', mem_types=mem_types)
 
 @gym_bp.route('/membership/type/add', methods=['GET', 'POST'])
@@ -67,7 +67,7 @@ def edit_membership_type(id: int):
 @gym_bp.route('/employee')
 @owner_required
 def view_employees():
-    employees = db.session.execute(db.select(Employee)).scalars().all()
+    employees = db.session.execute(db.select(Employee).order_by(Employee.active.desc())).scalars().all()
     return render_template('gym/view_employees.html', employees=employees)
 
 @gym_bp.route('/employee/<int:id>')
@@ -121,13 +121,11 @@ def edit_employee(id: int):
 
 
 @gym_bp.route('/trainer')
-@employee_required
 def view_trainers():
-    trainers = db.session.execute(db.select(Trainer)).scalars().all()
+    trainers = db.session.execute(db.select(Trainer).order_by(Trainer.active.desc())).scalars().all()
     return render_template('gym/view_trainers.html', trainers=trainers)
 
 @gym_bp.route('/trainer/<int:id>')
-@employee_required
 def view_trainer(id):
     trainer = db.get_or_404(Trainer, id)
     return render_template('gym/view_trainer.html', trainer=trainer)
@@ -173,7 +171,19 @@ def edit_trainer(id: int):
 
 @gym_bp.route('/classes')
 def view_classes():
-    classes = db.session.execute(db.select(GroupClass)).scalars().all()
+    trainer_id = request.args.get('trainer_id', type=int)
+    client_id = request.args.get('client_id', type=int)
+    
+    sql = db.select(GroupClass)
+    
+    if client_id:
+        sql = sql.join(GroupClass.participations).where(Client.id == client_id)
+
+    if trainer_id:
+        sql = sql.join(GroupClass.trainer).where(Trainer.id == trainer_id)
+
+    classes = db.session.execute(sql).scalars().all()
+    
     return render_template('gym/view_classes.html', classes=classes)
 
 @gym_bp.route('/classes/<int:id>')
@@ -266,7 +276,7 @@ def join_class(id):
     db.session.commit()
     
     flash('Pomyślnie zapisano na zajęcia!', 'success')
-    return redirect(url_for('gym.view_classes'))
+    return redirect(request.referrer or url_for('gym.view_classes'))
 
 
 @gym_bp.route('/classes/<int:id>/leave', methods=['POST'])
@@ -291,4 +301,4 @@ def leave_class(id):
     else:
         flash('Nie byłeś zapisany na te zajęcia.', 'warning')
 
-    return redirect(url_for('gym.view_classes'))
+    return redirect(request.referrer or url_for('gym.view_classes'))

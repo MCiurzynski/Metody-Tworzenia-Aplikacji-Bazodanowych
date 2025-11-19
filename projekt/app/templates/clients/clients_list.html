@@ -6,11 +6,11 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Baza Klientów</h2>
         <a href="{{ url_for('clients.add') }}" class="btn btn-primary">
-            Dodaj Klienta
+            <i class="bi bi-person-plus"></i> Dodaj Klienta
         </a>
     </div>
 
-    <div class="card shadow-sm">
+    <div class="card shadow-sm d-none d-md-block">
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
@@ -23,51 +23,107 @@
                             <th class="text-end">Akcje</th>
                         </tr>
                     </thead>
-                                            <tbody>
-                            {% for client in clients %}
-                                {% if client.active %}
-                                <tr>
-                                    <td>
-                                        <strong>{{ client.first_name }} {{ client.last_name }}</strong>
-                                        <div class="small text-muted">PESEL: {{ client.pesel }}</div>
-                                    </td>
-                                    <td>{{ client.user.email }}</td>
-                                    <td>{{ client.phone_number }}</td>
-                                    <td>
-                                        {% set status = namespace(has_active=false) %}
-                                        
-                                        {% for m in client.memberships %}
-                                            {% if m.is_active %}
-                                                {% set status.has_active = true %}
-                                            {% endif %}
-                                        {% endfor %}
-                                        
-                                        {% if status.has_active %}
-                                            <span class="badge bg-success">TAK</span>
-                                        {% else %}
-                                            <span class="badge bg-danger">NIE</span>
+                    <tbody>
+                        {% for client in clients %}
+                            {% if client.active %}
+                            <tr>
+                                <td>
+                                    <strong>{{ client.first_name }} {{ client.last_name }}</strong>
+                                    <div class="small text-muted">PESEL: {{ client.pesel }}</div>
+                                </td>
+                                <td>{{ client.user.email }}</td>
+                                <td>{{ client.phone_number }}</td>
+                                <td>
+                                    {% set status = namespace(has_active=false) %}
+                                    {% for m in client.memberships %}
+                                        {% if m.is_active %}
+                                            {% set status.has_active = true %}
                                         {% endif %}
-                                    </td>
-                                    <td class="text-end">
-                                        <div class="btn-group" role="group">
-                                            <a href="{{ url_for('clients.view_client', id=client.id) }}" class="btn btn-sm btn-outline-info">Info</a>
-                                            <a href="{{ url_for('clients.view_membership', id=client.id) }}" class="btn btn-sm btn-outline-success">Karnety</a>
-                                            <a href="{{ url_for('clients.edit_client', id=client.id) }}" class="btn btn-sm btn-outline-warning">Edytuj</a>
-                                            
-                                            <form action="{{ url_for('clients.delete_client', id=client.id) }}" method="post" class="d-inline" onsubmit="return confirm('Usunąć klienta?');">
-                                                <button type="submit" class="btn btn-sm btn-outline-danger">Usuń</button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                                {% endif %}
-                            {% else %}
-                                <tr><td colspan="5" class="text-center py-4">Brak klientów.</td></tr>
-                            {% endfor %}
-                        </tbody>
+                                    {% endfor %}
+                                    
+                                    {% if status.has_active %}
+                                        <span class="badge bg-success">TAK</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">NIE</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ url_for('clients.view_client', id=client.id) }}" class="btn btn-sm btn-outline-info">Info</a>
+                                        <a href="{{ url_for('clients.view_membership', id=client.id) }}" class="btn btn-sm btn-outline-success">Karnety</a>
+                                        <a href="{{ url_for('clients.edit_client', id=client.id) }}" class="btn btn-sm btn-outline-warning">Edytuj</a>
+                                        
+                                        <form action="{{ url_for('clients.delete_client', id=client.id) }}" method="post" class="d-inline" onsubmit="return confirm('Usunąć klienta?');">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Usuń</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endif %}
+                        {% else %}
+                            <tr><td colspan="5" class="text-center py-4">Brak klientów.</td></tr>
+                        {% endfor %}
+                    </tbody>
                 </table>
             </div>
         </div>
     </div>
+
+    <div class="d-md-none">
+        {% for client in clients %}
+            {% if client.active %}
+            <div class="card shadow-sm mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center bg-light">
+                    <span class="fw-bold">{{ client.first_name }} {{ client.last_name }}</span>
+                    
+                    {% set status = namespace(has_active=false) %}
+                    {% for m in client.memberships %}
+                        {% if m.is_active %}
+                            {% set status.has_active = true %}
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if status.has_active %}
+                        <span class="badge bg-success">Karnet: TAK</span>
+                    {% else %}
+                        <span class="badge bg-danger">Karnet: NIE</span>
+                    {% endif %}
+                </div>
+
+                <div class="card-body">
+                    <p class="mb-1"><strong>Email:</strong> {{ client.user.email }}</p>
+                    <p class="mb-1"><strong>Tel:</strong> <a href="tel:{{ client.phone_number }}" class="text-decoration-none">{{ client.phone_number }}</a></p>
+                    <p class="mb-3 text-muted small">PESEL: {{ client.pesel }}</p>
+
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <a href="{{ url_for('clients.view_client', id=client.id) }}" class="btn btn-outline-info w-100">
+                                Info
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <a href="{{ url_for('clients.view_membership', id=client.id) }}" class="btn btn-outline-success w-100">
+                                Karnety
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <a href="{{ url_for('clients.edit_client', id=client.id) }}" class="btn btn-outline-warning w-100">
+                                Edytuj
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <form action="{{ url_for('clients.delete_client', id=client.id) }}" method="post" class="d-block w-100" onsubmit="return confirm('Usunąć klienta?');">
+                                <button type="submit" class="btn btn-outline-danger w-100">Usuń</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        {% else %}
+            <div class="alert alert-info text-center">Brak klientów w bazie.</div>
+        {% endfor %}
+    </div>
+
 </div>
 {% endblock %}

@@ -15,9 +15,8 @@
                 <div class="card-body">
                     <p><strong>Email:</strong> {{ trainer.user.email }}</p>
                     <p><strong>Telefon:</strong> {{ trainer.phone_number }}</p>
-                    <p><strong>PESEL:</strong> {{ trainer.pesel }}</p>
-                    
                     {% if current_user.role == 'owner' and trainer.active %}
+                    <p><strong>PESEL:</strong> {{ trainer.pesel }}</p>
                         <div class="d-grid mt-4">
                             <a href="{{ url_for('gym.edit_trainer', id=trainer.id) }}" class="btn btn-warning">Edytuj Dane</a>
                         </div>

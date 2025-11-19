@@ -4,40 +4,54 @@
 
 {% block content %}
 <div class="container">
-    <div class="p-5 mb-4 bg-light rounded-3 border shadow-sm">
-        <div class="container-fluid py-2">
-            <h1 class="display-6 fw-bold">Panel Recepcji</h1>
-            <p class="fs-5">Szybki dostęp do najważniejszych funkcji obsługi klienta.</p>
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-5 text-primary">Panel Recepcji</h1>
+            <p class="lead text-muted">Szybki dostęp do najważniejszych funkcji obsługi klienta.</p>
         </div>
     </div>
 
     <div class="row g-4">
-        <div class="col-md-6">
-            <div class="card h-100">
+        <div class="col-md-6 col-lg">
+            <div class="card h-100 border-primary shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Klienci</h5>
+                </div>
                 <div class="card-body">
-                    <h3 class="card-title text-primary">Klienci</h3>
                     <p class="card-text">Baza klubowiczów, historia karnetów, edycja danych.</p>
-                    <a href="{{ url_for('clients.index') }}" class="btn btn-primary btn-lg w-100">
-                        Przeszukaj Bazę Klientów
-                    </a>
-                    <div class="mt-3 text-center">
-                         <a href="{{ url_for('clients.add') }}" class="text-decoration-none">Rejestracja nowego klienta</a>
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('clients.index') }}" class="btn btn-primary">Lista Klientów</a>
+                        <a href="{{ url_for('clients.add') }}" class="btn btn-outline-primary">Dodaj klienta</a>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-6">
-            <div class="card h-100">
+        <div class="col-md-6 col-lg">
+            <div class="card h-100 border-info shadow-sm">
+                <div class="card-header text-bg-info">
+                    <h5 class="mb-0">Grafik Zajęć</h5>
+                </div>
                 <div class="card-body">
-                    <h3 class="card-title text-info">Grafik Zajęć</h3>
                     <p class="card-text">Planowanie zajęć grupowych i przypisywanie sal.</p>
-                    <a href="{{ url_for('gym.view_classes') }}" class="btn btn-info text-white btn-lg w-100">
-                        Zarządzaj Grafikiem
-                    </a>
-                    <div class="mt-3 text-center">
-                        <a href="{{ url_for('gym.add_class') }}" class="text-decoration-none">Dodaj nowe zajęcia</a>
-                   </div>
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('gym.view_classes') }}" class="btn btn-info">Zarządzaj Grafikiem</a>
+                        <a href="{{ url_for('gym.add_class') }}" class="btn btn-outline-info text-dark">Dodaj nowe zajęcia</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg">
+            <div class="card h-100 border-success shadow-sm">
+                <div class="card-header text-bg-success">
+                    <h5 class="mb-0">Trenerzy</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Lista trenerów.</p>
+                    <div class="d-grid gap-2 py-4">
+                        <a href="{{ url_for('gym.view_trainers') }}" class="btn btn-success">Lista trenerów</a>
+                    </div>
                 </div>
             </div>
         </div>

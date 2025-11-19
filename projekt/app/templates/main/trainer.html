@@ -6,29 +6,22 @@
 <div class="container">
     <div class="row mb-4 align-items-center">
         <div class="col-md-8">
-            <h1 class="display-5">Cześć, {{ current_user.person_profile.first_name }}! 🏋️‍♂️</h1>
-            <p class="text-muted">Gotowy na dzisiejszy trening?</p>
-        </div>
-        <div class="col-md-4 text-md-end">
-            <span class="badge bg-secondary fs-6">Trener</span>
+            <h1 class="display-5">Panel Trenera</h1>
+            <p class="text-muted">Sprawdź swoje plany na dzisiaj!</p>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-lg-8 mx-auto">
-            <div class="card shadow-lg border-0">
-                <div class="card-header bg-dark text-white py-3">
-                    <h4 class="mb-0 text-center">Twoje Centrum Dowodzenia</h4>
+    <div class="col-md-7 mx-auto col-lg">
+            <div class="card h-100 border-dark shadow-sm">
+                <div class="card-header text-bg-dark py-3">
+                    <h4 class="mb-0">Grafik Zajęć</h4>
                 </div>
-                <div class="card-body p-5 text-center">
-                    <p class="fs-4 mb-4">Sprawdź, co masz w planie na ten tydzień.</p>
-                    
-                    <a href="{{ url_for('gym.view_classes') }}" class="btn btn-warning btn-lg px-5 py-3 shadow-sm fw-bold">
-                        📅 Mój Grafik i Listy Obecności
-                    </a>
-                </div>
-                <div class="card-footer bg-white text-muted text-center py-3">
-                    <small>Jeśli nie możesz poprowadzić zajęć, zgłoś to recepcji.</small>
+                <div class="card-body">
+                    <p class="card-text fs-5">Planowanie zajęć grupowych i przypisywanie sal.</p>
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('gym.view_classes', trainer_id=current_user.id) }}" class="btn btn-warning fs-5">Zarządzaj Grafikiem</a>
+                        <a href="{{ url_for('gym.add_class') }}" class="btn btn-outline-warning text-dark fs-5">Dodaj nowe zajęcia</a>
+                    </div>
                 </div>
             </div>
         </div>

@@ -8,12 +8,12 @@
         <h2>Oferta Karnetów</h2>
         {% if current_user.role == 'owner' %}
             <a href="{{ url_for('gym.add_membership_type') }}" class="btn btn-success">
-                ➕ Dodaj Nowy Typ
+                <i class="bi bi-plus-lg"></i> Dodaj Nowy Typ
             </a>
         {% endif %}
     </div>
 
-    <div class="card shadow-sm">
+    <div class="card shadow-sm d-none d-md-block">
         <div class="card-body">
             <table class="table table-hover align-middle">
                 <thead class="table-light">
@@ -68,5 +68,48 @@
             </table>
         </div>
     </div>
+
+    <div class="d-md-none">
+        {% for type in mem_types %}
+        <div class="card shadow-sm mb-3 {{ 'bg-light border-secondary' if not type.active else '' }}">
+            <div class="card-header d-flex justify-content-between align-items-center {{ 'bg-secondary text-white' if not type.active else 'bg-white' }}">
+                <span class="fw-bold h5 mb-0">{{ type.name }}</span>
+                <span class="badge {{ 'bg-light text-dark' if not type.active else 'bg-success' }} fs-6">
+                    {{ "%.2f"|format(type.price) }} PLN
+                </span>
+            </div>
+
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <span><i class="bi bi-calendar-event"></i> Ważność:</span>
+                    <strong>{{ type.duration }} dni</strong>
+                </div>
+                
+                <div class="d-flex justify-content-between mb-3">
+                    <span>Status:</span>
+                    {% if type.active %}
+                        <span class="badge bg-success">W ofercie</span>
+                    {% else %}
+                        <span class="badge bg-dark">Archiwum</span>
+                    {% endif %}
+                </div>
+
+                {% if current_user.role == 'owner' and type.active %}
+                    <div class="btn-group w-100 shadow-sm">
+                        <a href="{{ url_for('gym.edit_membership_type', id=type.id) }}" class="btn btn-outline-primary">Edytuj</a>
+                        <form action="{{ url_for('gym.delete_membership_type', id=type.id) }}" method="post" class="d-inline w-100" onsubmit="return confirm('Czy na pewno chcesz zarchiwizować ten typ karnetu?');">
+                            <button type="submit" class="btn btn-outline-danger w-100" style="border-top-left-radius: 0; border-bottom-left-radius: 0;">Usuń</button>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+            <div class="alert alert-secondary text-center">
+                Brak zdefiniowanych typów karnetów.
+            </div>
+        {% endfor %}
+    </div>
+
 </div>
 {% endblock %}

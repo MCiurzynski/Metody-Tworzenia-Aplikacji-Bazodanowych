@@ -7,62 +7,110 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Personel Recepcji</h2>
         <a href="{{ url_for('gym.add_employee') }}" class="btn btn-primary">
-            👤 Dodaj Pracownika
+            <i class="bi bi-person-plus"></i> Dodaj Pracownika
         </a>
     </div>
 
-    <div class="card shadow-sm">
+    <div class="card shadow-sm d-none d-md-block">
         <div class="card-body">
-            <table class="table table-hover align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th>Imię i Nazwisko</th>
-                        <th>Telefon</th>
-                        <th>Email</th>
-                        <th>Status</th>
-                        <th class="text-end">Akcje</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for employee in employees %}
-                        <tr class="{{ 'table-secondary text-muted' if not employee.active else '' }}">
-                            <td>
-                                <strong>{{ employee.first_name }} {{ employee.last_name }}</strong>
-                                <div class="small text-muted">{{ employee.user.username }}</div>
-                            </td>
-                            <td>{{ employee.phone_number }}</td>
-                            <td>{{ employee.user.email }}</td>
-                            <td>
-                                {% if employee.active %}
-                                    <span class="badge bg-success">Aktywny</span>
-                                {% else %}
-                                    <span class="badge bg-secondary">Archiwum</span>
-                                {% endif %}
-                            </td>
-                            <td class="text-end">
-                                <div class="btn-group" role="group">
-                                    <a href="{{ url_for('gym.view_employee', id=employee.id) }}" class="btn btn-sm btn-outline-info">Info</a>
-                                    
-                                    {% if employee.active %}
-                                        <a href="{{ url_for('gym.edit_employee', id=employee.id) }}" class="btn btn-sm btn-outline-warning">Edytuj</a>
-                                        
-                                        <form action="{{ url_for('gym.delete_employee', id=employee.id) }}" method="post" class="d-inline" onsubmit="return confirm('Czy na pewno chcesz zarchiwizować konto pracownika {{ employee.first_name }}?');">
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">Usuń</button>
-                                        </form>
-                                    {% endif %}
-                                </div>
-                            </td>
-                        </tr>
-                    {% else %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
                         <tr>
-                            <td colspan="5" class="text-center py-4 text-muted">
-                                Brak pracowników w bazie.
-                            </td>
+                            <th>Imię i Nazwisko</th>
+                            <th>Telefon</th>
+                            <th>Email</th>
+                            <th>Status</th>
+                            <th class="text-end">Akcje</th>
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {% for employee in employees %}
+                            <tr class="{{ 'table-secondary text-muted' if not employee.active else '' }}">
+                                <td>
+                                    <strong>{{ employee.first_name }} {{ employee.last_name }}</strong>
+                                    <div class="small text-muted">Login: {{ employee.user.username }}</div>
+                                </td>
+                                <td>{{ employee.phone_number }}</td>
+                                <td>{{ employee.user.email }}</td>
+                                <td>
+                                    {% if employee.active %}
+                                        <span class="badge bg-success">Aktywny</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Archiwum</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ url_for('gym.view_employee', id=employee.id) }}" class="btn btn-sm btn-outline-info">Info</a>
+                                        
+                                        {% if employee.active %}
+                                            <a href="{{ url_for('gym.edit_employee', id=employee.id) }}" class="btn btn-sm btn-outline-warning">Edytuj</a>
+                                            
+                                            <form action="{{ url_for('gym.delete_employee', id=employee.id) }}" method="post" class="d-inline" onsubmit="return confirm('Czy na pewno chcesz zarchiwizować konto pracownika {{ employee.first_name }}?');">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">Usuń</button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center py-4 text-muted">
+                                    Brak pracowników w bazie.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
+
+    <div class="d-md-none">
+        {% for employee in employees %}
+        <div class="card shadow-sm mb-3 {{ 'bg-light border-secondary' if not employee.active else '' }}">
+            <div class="card-header d-flex justify-content-between align-items-center {{ 'bg-secondary text-white' if not employee.active else 'bg-white' }}">
+                <span class="fw-bold">{{ employee.first_name }} {{ employee.last_name }}</span>
+                {% if employee.active %}
+                    <span class="badge bg-success">Aktywny</span>
+                {% else %}
+                    <span class="badge bg-dark">Archiwum</span>
+                {% endif %}
+            </div>
+
+            <div class="card-body">
+                <p class="mb-1 small text-muted">Login: <strong>{{ employee.user.username }}</strong></p>
+                
+                <p class="mb-1">
+                    <i class="bi bi-envelope"></i> 
+                    <a href="mailto:{{ employee.user.email }}" class="text-decoration-none">{{ employee.user.email }}</a>
+                </p>
+                <p class="mb-3">
+                    <i class="bi bi-telephone"></i> 
+                    <a href="tel:{{ employee.phone_number }}" class="text-decoration-none">{{ employee.phone_number }}</a>
+                </p>
+
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('gym.view_employee', id=employee.id) }}" class="btn btn-outline-info">Informacje</a>
+
+                    {% if employee.active %}
+                        <div class="btn-group w-100">
+                            <a href="{{ url_for('gym.edit_employee', id=employee.id) }}" class="btn btn-outline-warning">Edytuj</a>
+                            <form action="{{ url_for('gym.delete_employee', id=employee.id) }}" method="post" class="d-inline w-100" onsubmit="return confirm('Czy na pewno chcesz zarchiwizować konto pracownika {{ employee.first_name }}?');">
+                                <button type="submit" class="btn btn-outline-danger w-100" style="border-top-left-radius: 0; border-bottom-left-radius: 0;">Usuń</button>
+                            </form>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% else %}
+            <div class="alert alert-secondary text-center">
+                Brak pracowników w bazie.
+            </div>
+        {% endfor %}
+    </div>
+
 </div>
 {% endblock %}

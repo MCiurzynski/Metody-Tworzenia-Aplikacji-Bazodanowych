@@ -20,23 +20,8 @@
                 <div class="card-body">
                     <p class="card-text">Zarządzaj kontami pracowników recepcji.</p>
                     <div class="d-grid gap-2">
-                        <a href="{{ url_for('gym.view_employees') }}" class="btn btn-outline-primary">Lista Pracowników</a>
-                        <a href="{{ url_for('gym.add_employee') }}" class="btn btn-primary">Dodaj Pracownika</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6 col-lg-4">
-            <div class="card h-100 border-success shadow-sm">
-                <div class="card-header bg-success text-white">
-                    <h5 class="mb-0">Oferta Handlowa</h5>
-                </div>
-                <div class="card-body">
-                    <p class="card-text">Definiuj rodzaje karnetów.</p>
-                    <div class="d-grid gap-2">
-                        <a href="{{ url_for('gym.view_membership_types') }}" class="btn btn-outline-success">Przeglądaj Ofertę</a>
-                        <a href="{{ url_for('gym.add_membership_type') }}" class="btn btn-success">Nowy Typ Karnetu</a>
+                        <a href="{{ url_for('gym.view_employees') }}" class="btn btn-primary">Lista Pracowników</a>
+                        <a href="{{ url_for('gym.add_employee') }}" class="btn btn-outline-primary">Dodaj Pracownika</a>
                     </div>
                 </div>
             </div>
@@ -50,8 +35,53 @@
                 <div class="card-body">
                     <p class="card-text">Zarządzaj kadrą trenerską i ich profilami.</p>
                     <div class="d-grid gap-2">
-                        <a href="{{ url_for('gym.view_trainers') }}" class="btn btn-outline-info text-dark">Lista Trenerów</a>
-                        <a href="{{ url_for('gym.add_trainer') }}" class="btn btn-info">Zatrudnij Trenera</a>
+                        <a href="{{ url_for('gym.view_trainers') }}" class="btn btn-info">Lista Trenerów</a>
+                        <a href="{{ url_for('gym.add_trainer') }}" class="btn btn-outline-info text-dark">Zatrudnij Trenera</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-success shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Oferta Handlowa</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Definiuj rodzaje karnetów.</p>
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('gym.view_membership_types') }}" class="btn btn-success">Przeglądaj Ofertę</a>
+                        <a href="{{ url_for('gym.add_membership_type') }}" class="btn btn-outline-success">Nowy Typ Karnetu</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-danger shadow-sm">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">Klienci</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Zarządzaj klientami.</p>
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('clients.index') }}" class="btn btn-danger">Lista Klientów</a>
+                        <a href="{{ url_for('clients.add') }}" class="btn btn-outline-danger">Dodaj Klienta</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-secondary shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">Zajęcia Grupowe</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Zarządzaj zajęciami grupowymi.</p>
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('gym.view_classes') }}" class="btn btn-secondary">Lista Zajęć Grupowych</a>
+                        <a href="{{ url_for('gym.add_class') }}" class="btn btn-outline-secondary">Dodaj Zajęcia Grupowe</a>
                     </div>
                 </div>
             </div>

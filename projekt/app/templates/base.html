@@ -25,31 +25,40 @@
           </li>
           {% if current_user.role == 'owner' %}
           <li class="nav-item">
-            <a class="nav-link text-light" href="{{ url_for('gym.view_employees') }}">Lista Pracowników</a>
+            <a class="nav-link text-light" href="{{ url_for('gym.view_employees') }}">Pracownicy</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link text-light" href="{{ url_for('gym.view_trainers') }}">Lista Trenerów</a>
+            <a class="nav-link text-light" href="{{ url_for('gym.view_trainers') }}">Trenerzy</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link text-light" href="{{ url_for('gym.view_membership_types') }}">Oferta Karnetów</a>
+            <a class="nav-link text-light" href="{{ url_for('gym.view_membership_types') }}">Karnety</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-light" href="{{ url_for('clients.index') }}">Klienci</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-light" href="{{ url_for('gym.view_classes') }}">Zajęcia Grupowe</a>
           </li>
           {% endif %}
           {% if current_user.role == 'employee' %}
           <li class="nav-item">
-            <a class="nav-link text-light" href="{{ url_for('clients.index') }}">Lista Klientów</a>
+            <a class="nav-link text-light" href="{{ url_for('clients.index') }}">Klienci</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link text-light" href="{{ url_for('gym.view_classes') }}">Lista Zajęć</a>
+            <a class="nav-link text-light" href="{{ url_for('gym.view_classes') }}">Zajęcia Grupowe</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-light" href="{{ url_for('gym.view_trainers') }}">Trenerzy</a>
           </li>
           {% endif %}
           {% if current_user.role == 'trainer' %}
           <li class="nav-item">
-            <a class="nav-link text-light" href="{{ url_for('gym.view_classes') }}">Mój Grafik#todo</a>
+            <a class="nav-link text-light" href="{{ url_for('gym.view_classes', trainer_id=current_user.id) }}">Mój Grafik</a>
           </li>
           {% endif %}
           {% if current_user.role == 'client' %}
           <li class="nav-item">
-            <a class="nav-link text-light" href="{{ url_for('main.index') }}">Mój Plan#todo</a>
+            <a class="nav-link text-light" href="{{ url_for('gym.view_classes', client_id=current_user.id) }}">Mój Plan</a>
           </li>
           <li class="nav-item">
             <a class="nav-link text-light" href="{{ url_for('gym.view_classes') }}">Grafik Zajęć</a>
@@ -68,7 +77,7 @@
             <span class="nav-link text-light">Witaj, {{ current_user.person_profile.first_name }}</span>
           </li>
           <li class="nav-item">
-            <a class="nav-link btn btn-outline-light btn-sm ms-2" href="{{ url_for('auth.logout') }}">Wyloguj</a>
+            <a type="button" class="nav-link btn btn-sm ms-2" href="{{ url_for('auth.logout') }}">Wyloguj</a>
           </li>
         {% else %}
           <li class="nav-item">
@@ -85,9 +94,7 @@
 </nav>
 
 <section class="container mt-4">
-  <header class="mb-4 border-bottom">
-    {% block header %}{% endblock %}
-  </header>
+
 
   {% for message in get_flashed_messages() %}
     <div class="alert alert-info alert-dismissible fade show" role="alert">

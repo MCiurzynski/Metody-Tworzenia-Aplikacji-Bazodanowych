@@ -9,16 +9,16 @@
         
         {% if current_user.role in ['employee', 'owner'] %}
             <a href="{{ url_for('gym.add_class') }}" class="btn btn-success">
-                📅 Dodaj Zajęcia
+                <i class="bi bi-plus-lg"></i> Dodaj Zajęcia
             </a>
         {% endif %}
     </div>
 
-    <div class="card shadow-sm">
+    <div class="card shadow-sm d-none d-md-block">
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-hover align-middle text-center">
-                    <thead class="table-dark">
+                    <thead class="table-light">
                         <tr>
                             <th>Dzień</th>
                             <th>Godzina</th>
@@ -31,7 +31,7 @@
                     <tbody>
                         {% for class in classes %}
                         <tr>
-                            <td class="fw-bold text-primary">
+                            <td class="fw-bold">
                                 {% if class.day == 0 %}Poniedziałek
                                 {% elif class.day == 1 %}Wtorek
                                 {% elif class.day == 2 %}Środa
@@ -60,9 +60,7 @@
                                     {% endif %}
 
                                     {% if current_user.role == 'client' %}
-                                        
                                         {% set status = namespace(is_signed_up=false) %}
-                                        
                                         {% for p in class.participations %}
                                             {% if p.client_id == current_user.person_profile.id %}
                                                 {% set status.is_signed_up = true %}
@@ -78,7 +76,6 @@
                                                 <button type="submit" class="btn btn-sm btn-success">Zapisz się</button>
                                             </form>
                                         {% endif %}
-
                                     {% endif %}
                                 </div>
                             </td>
@@ -93,5 +90,73 @@
             </div>
         </div>
     </div>
+
+    <div class="d-md-none">
+        {% for class in classes %}
+        <div class="card shadow-sm mb-3">
+            <div class="card-header d-flex justify-content-between align-items-center bg-light">
+                <span class="fw-bold text-primary">
+                    {% if class.day == 0 %}Poniedziałek
+                    {% elif class.day == 1 %}Wtorek
+                    {% elif class.day == 2 %}Środa
+                    {% elif class.day == 3 %}Czwartek
+                    {% elif class.day == 4 %}Piątek
+                    {% elif class.day == 5 %}Sobota
+                    {% else %}Niedziela{% endif %}
+                </span>
+                <span class="badge bg-secondary">{{ class.start_hour.strftime('%H:%M') }}</span>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title fw-bold">{{ class.name }}</h5>
+                <p class="card-text mb-1">
+                    <small class="text-muted">Trener:</small> 
+                    <a href="{{ url_for('gym.view_trainer', id=class.trainer.id) }}" class="text-decoration-none fw-bold">
+                        {{ class.trainer.first_name }} {{ class.trainer.last_name }}
+                    </a>
+                </p>
+                <p class="card-text">
+                    <small class="text-muted">Czas trwania:</small> {{ class.length }} min
+                </p>
+
+                <div class="d-grid gap-2">
+                    {% if current_user.role == 'client' %}
+                        {% set status = namespace(is_signed_up=false) %}
+                        {% for p in class.participations %}
+                            {% if p.client_id == current_user.person_profile.id %}
+                                {% set status.is_signed_up = true %}
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if status.is_signed_up %}
+                            <form action="{{ url_for('gym.leave_class', id=class.id) }}" method="post" class="d-block">
+                                <button type="submit" class="btn btn-outline-danger w-100">Wypisz się</button>
+                            </form>
+                        {% else %}
+                            <form action="{{ url_for('gym.join_class', id=class.id) }}" method="post" class="d-block">
+                                <button type="submit" class="btn btn-success w-100">Zapisz się</button>
+                            </form>
+                        {% endif %}
+                    {% endif %}
+                    
+                    <a href="{{ url_for('gym.view_class', id=class.id) }}" class="btn btn-outline-info">Szczegóły</a>
+
+                    {% if current_user.role in ['employee', 'owner'] %}
+                        <div class="btn-group">
+                            <a href="{{ url_for('gym.edit_class', id=class.id) }}" class="btn btn-outline-warning">Edytuj</a>
+                            <form action="{{ url_for('gym.delete_class', id=class.id) }}" method="post" class="d-inline w-100" onsubmit="return confirm('Czy na pewno usunąć te zajęcia?');">
+                                <button type="submit" class="btn btn-outline-danger w-100" style="border-top-left-radius: 0; border-bottom-left-radius: 0;">Usuń</button>
+                            </form>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% else %}
+            <div class="alert alert-info text-center">
+                Grafik jest pusty.
+            </div>
+        {% endfor %}
+    </div>
+
 </div>
 {% endblock %}

@@ -15,11 +15,12 @@
 </div>
 
 <p class="h1 text-primary">Cennik</p>
+<hr>
 <div class="row text-center">
     {% for mem_type in mem_types %}
     <div class="col-md-4 my-3">
-        <div class="card">
-            <h3 class="text-success card-header">{{ mem_type.name }}</h3>
+        <div class="card shadow-sm">
+            <h3 class="text-primary card-header">{{ mem_type.name }}</h3>
             <div class="card-body">
                 <p class="h4">{{ mem_type.price }} zł</p>
                 <p class="h4">{{ mem_type.duration }} dni</p>
