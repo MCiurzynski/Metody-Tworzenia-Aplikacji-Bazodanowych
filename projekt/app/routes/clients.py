@@ -2,13 +2,12 @@ import functools
 import re
 
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, session, url_for, Response
+    Blueprint, flash, g, redirect, render_template, url_for
 )
 from app.db import db, Client, Membership, MembershipType
-from flask_login import login_user, logout_user, login_required, current_user
 from app.routes.auth import employee_required
 from app.forms import AssignMembershipForm, RegistrationForm, PersonForm
-from app.services import create_user_with_profile
+from app.services import create_user_with_profile, search
 
 clients_bp = Blueprint('clients', __name__, url_prefix='/client')
 
@@ -17,22 +16,9 @@ clients_bp = Blueprint('clients', __name__, url_prefix='/client')
 def index():  # clients list
     stmt = db.select(Client)
 
-    search_query = request.args.get('search')
+    search_columns = ['first_name', 'last_name', 'pesel', 'phone_number']
 
-    if search_query:
-        search_terms = search_query.split()
-        
-        search_columns = ['first_name', 'last_name', 'pesel', 'phone_number']
-        
-        for term in search_terms:
-            term_pattern = f"%{term}%"
-
-            or_filters = []
-            for col_name in search_columns:
-                column = getattr(Client, col_name)
-                or_filters.append(column.ilike(term_pattern))
-
-            stmt = stmt.where(db.or_(*or_filters))
+    stmt = search(stmt, search_columns, Client)
 
     clients = db.session.execute(stmt).scalars().all()
     return render_template('clients/clients_list.html', clients=clients)

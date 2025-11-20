@@ -1,4 +1,5 @@
 from app.db import db, User, Client, Trainer, Employee
+from flask import request
 
 def create_user_with_profile(form_data, role):
     try:
@@ -43,3 +44,20 @@ def create_user_with_profile(form_data, role):
     except Exception as e:
         db.session.rollback()
         return False, f"Błąd bazy danych: {str(e)}"
+
+def search(stmt, search_columns, table):
+    search_query = request.args.get('search')
+
+    if search_query:
+        search_terms = search_query.split()
+        
+        for term in search_terms:
+            term_pattern = f"%{term}%"
+
+            or_filters = []
+            for col_name in search_columns:
+                column = getattr(table, col_name)
+                or_filters.append(column.ilike(term_pattern))
+
+            stmt = stmt.where(db.or_(*or_filters))
+    return stmt

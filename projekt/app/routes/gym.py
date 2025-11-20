@@ -1,6 +1,3 @@
-import functools
-import re
-
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for, Response
 )
@@ -9,14 +6,18 @@ from flask_login import login_user, logout_user, login_required, current_user
 from app.routes.auth import employee_required, owner_required
 from app.forms import MembershipTypeForm, RegistrationForm, PersonForm, GroupClassForm, PersonDataForm
 from flask import abort
-from app.services import create_user_with_profile
+from app.services import create_user_with_profile, search
 
 gym_bp = Blueprint('gym', __name__, url_prefix='/')
 
 @gym_bp.route('/membership/type')
 @employee_required
 def view_membership_types():
-    mem_types = db.session.execute(db.select(MembershipType).order_by(MembershipType.active.desc())).scalars().all()
+    stmt = db.select(MembershipType).order_by(MembershipType.active.desc())
+    search_columns = ['name', 'price']
+    stmt = search(stmt, search_columns, MembershipType)
+
+    mem_types = db.session.execute(stmt).scalars().all()
     return render_template('gym/view_membership_types.html', mem_types=mem_types)
 
 @gym_bp.route('/membership/type/add', methods=['GET', 'POST'])
@@ -67,7 +68,13 @@ def edit_membership_type(id: int):
 @gym_bp.route('/employee')
 @owner_required
 def view_employees():
-    employees = db.session.execute(db.select(Employee).order_by(Employee.active.desc())).scalars().all()
+    stmt = db.select(Employee).order_by(Employee.active.desc())
+
+    search_columns = ['first_name', 'last_name', 'pesel', 'phone_number']
+
+    stmt = search(stmt, search_columns, Employee)
+
+    employees = db.session.execute(stmt).scalars().all()
     return render_template('gym/view_employees.html', employees=employees)
 
 @gym_bp.route('/employee/<int:id>')
@@ -122,7 +129,11 @@ def edit_employee(id: int):
 
 @gym_bp.route('/trainer')
 def view_trainers():
-    trainers = db.session.execute(db.select(Trainer).order_by(Trainer.active.desc())).scalars().all()
+    stmt = db.select(Trainer).order_by(Trainer.active.desc())
+    search_columns = ['first_name', 'last_name', 'pesel', 'phone_number']
+    stmt = search(stmt, search_columns, Trainer)
+
+    trainers = db.session.execute(stmt).scalars().all()
     return render_template('gym/view_trainers.html', trainers=trainers)
 
 @gym_bp.route('/trainer/<int:id>')
@@ -174,15 +185,17 @@ def view_classes():
     trainer_id = request.args.get('trainer_id', type=int)
     client_id = request.args.get('client_id', type=int)
     
-    sql = db.select(GroupClass)
+    stmt = db.select(GroupClass)
     
     if client_id:
-        sql = sql.join(GroupClass.participations).where(Client.id == client_id)
+        stmt = stmt.join(GroupClass.participations).where(Participation.client_id == client_id)
 
     if trainer_id:
-        sql = sql.join(GroupClass.trainer).where(Trainer.id == trainer_id)
+        stmt = stmt.where(GroupClass.trainer_id == trainer_id)
 
-    classes = db.session.execute(sql).scalars().all()
+    stmt = stmt.order_by(GroupClass.day, GroupClass.start_hour)
+
+    classes = db.session.execute(stmt).scalars().all()
     
     return render_template('gym/view_classes.html', classes=classes)
 
