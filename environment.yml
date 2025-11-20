@@ -16,3 +16,4 @@ dependencies:
     - flask
     - flask_login
     - Flask-SQLAlchemy
+    - flask_wtf

@@ -3,11 +3,22 @@
 
 {% block content %}
 <div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Baza Klientów</h2>
-        <a href="{{ url_for('clients.add') }}" class="btn btn-primary">
-            <i class="bi bi-person-plus"></i> Dodaj Klienta
-        </a>
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <h2 class="mb-0">Baza Klientów</h2>
+        
+        <div class="d-flex gap-2">
+            <form class="d-flex" role="search" method="get" action="{{ url_for('clients.index') }}">
+                <input class="form-control me-2" type="search" name="search" placeholder="Nazwisko, PESEL, Tel..." aria-label="Search" value="{{ request.args.get('search', '') }}">
+                <button class="btn btn-outline-primary" type="submit">Szukaj</button>
+                <!-- {% if request.args.get('q') %}
+                    <a href="{{ url_for('clients.index') }}" class="btn btn-outline-secondary" title="Wyczyść">X</a>
+                {% endif %} -->
+            </form>
+
+            <a href="{{ url_for('clients.add') }}" class="btn btn-primary text-nowrap">
+                Dodaj Klienta
+            </a>
+        </div>
     </div>
 
     <div class="card shadow-sm d-none d-md-block">
@@ -61,7 +72,7 @@
                             </tr>
                             {% endif %}
                         {% else %}
-                            <tr><td colspan="5" class="text-center py-4">Brak klientów.</td></tr>
+                            <tr><td colspan="5" class="text-center py-4">Brak klientów spełniających kryteria.</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -97,19 +108,13 @@
 
                     <div class="row g-2">
                         <div class="col-6">
-                            <a href="{{ url_for('clients.view_client', id=client.id) }}" class="btn btn-outline-info w-100">
-                                Info
-                            </a>
+                            <a href="{{ url_for('clients.view_client', id=client.id) }}" class="btn btn-outline-info w-100">Info</a>
                         </div>
                         <div class="col-6">
-                            <a href="{{ url_for('clients.view_membership', id=client.id) }}" class="btn btn-outline-success w-100">
-                                Karnety
-                            </a>
+                            <a href="{{ url_for('clients.view_membership', id=client.id) }}" class="btn btn-outline-success w-100">Karnety</a>
                         </div>
                         <div class="col-6">
-                            <a href="{{ url_for('clients.edit_client', id=client.id) }}" class="btn btn-outline-warning w-100">
-                                Edytuj
-                            </a>
+                            <a href="{{ url_for('clients.edit_client', id=client.id) }}" class="btn btn-outline-warning w-100">Edytuj</a>
                         </div>
                         <div class="col-6">
                             <form action="{{ url_for('clients.delete_client', id=client.id) }}" method="post" class="d-block w-100" onsubmit="return confirm('Usunąć klienta?');">
@@ -121,9 +126,8 @@
             </div>
             {% endif %}
         {% else %}
-            <div class="alert alert-info text-center">Brak klientów w bazie.</div>
+            <div class="alert alert-info text-center">Brak wyników wyszukiwania.</div>
         {% endfor %}
     </div>
-
 </div>
 {% endblock %}

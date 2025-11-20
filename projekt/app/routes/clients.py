@@ -15,7 +15,26 @@ clients_bp = Blueprint('clients', __name__, url_prefix='/client')
 @clients_bp.route('/')
 @employee_required
 def index():  # clients list
-    clients = db.session.execute(db.select(Client)).scalars().all()
+    stmt = db.select(Client)
+
+    search_query = request.args.get('search')
+
+    if search_query:
+        search_terms = search_query.split()
+        
+        search_columns = ['first_name', 'last_name', 'pesel', 'phone_number']
+        
+        for term in search_terms:
+            term_pattern = f"%{term}%"
+
+            or_filters = []
+            for col_name in search_columns:
+                column = getattr(Client, col_name)
+                or_filters.append(column.ilike(term_pattern))
+
+            stmt = stmt.where(db.or_(*or_filters))
+
+    clients = db.session.execute(stmt).scalars().all()
     return render_template('clients/clients_list.html', clients=clients)
 
 @clients_bp.route('/add', methods=['GET', 'POST'])
